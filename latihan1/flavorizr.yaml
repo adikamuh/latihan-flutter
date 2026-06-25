@@ -1,0 +1,19 @@
+flavors:
+  dev:
+    app_name: "STI Dev"
+    android:
+      application_id: "com.sumihai.hrms.dev" # ID unik untuk Playstore Dev
+    ios:
+      bundle_id: "com.sumihai.hrms.dev"
+    # Anda bisa tambahkan variabel custom di sini
+    env:
+      BASE_URL: "http://sumihai.ddns.net:13080"
+
+  prod:
+    app_name: "STI"
+    android:
+      application_id: "com.sumihai.hrms"
+    ios:
+      bundle_id: "com.sumihai.hrms"
+    env:
+      BASE_URL: "http://sumihai.ddns.net:13080"
