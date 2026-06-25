@@ -4,10 +4,15 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:latihan1/core/constants/app_const.dart';
 import 'package:latihan1/core/services/app_log.dart';
+import 'package:latihan1/core/services/dio_client.dart';
 import 'package:latihan1/core/services/secured_storage_service.dart';
 import 'package:latihan1/features/auth/data/models/login_payload.dart';
 import 'package:latihan1/features/auth/domain/entities/login_entity.dart';
 import 'package:latihan1/features/auth/domain/usecases/login_usecase.dart';
+
+import '../../../../core/constants/app_const.dart';
+import '../../../../core/services/secured_storage_service.dart';
+import '../../domain/entities/login_entity.dart';
 
 class AuthProvider extends ChangeNotifier {
   final LoginUsecase loginUsecase;
@@ -64,10 +69,23 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> authChcek() async {
+    try {
+      final storedData = await SecuredStorageService.readValue<LoginEntity>(
+        key: AppConst.keyUser,
+        fromString: (value) => LoginEntity.fromJson(jsonDecode(value)),
+      );
+      // check if access token not expired
+      // if not expired
+      // _saveLoginData(storedData);
+    } catch (e, s) {}
+  }
+
   Future<void> _saveLoginData(LoginEntity data) async {
     await SecuredStorageService.writeValue(
       AppConst.keyUser,
       jsonEncode(data.toJson()),
     );
+    DioClient.instance.setToken(data.accessToken ?? '');
   }
 }
