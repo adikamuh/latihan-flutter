@@ -36,8 +36,6 @@ class _LoginViewState extends State<LoginView> {
 
     // Cek jika login berhasil dan tidak ada error
     if (_authProvider.loginData != null && _authProvider.errorMessage.isEmpty) {
-      // TODO: Arahkan ke halaman Home/Dashboard di sini
-      // Example: Navigator.pushReplacementNamed(context, '/home');
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -109,36 +107,6 @@ class _LoginViewState extends State<LoginView> {
                     ),
 
                     const SizedBox(height: 40),
-
-                    // 4. Code Text Field (Baru ditambahkan sesuai request)
-                    TextField(
-                      controller: provider.codeController,
-                      decoration: InputDecoration(
-                        labelText: "Code",
-                        labelStyle: const TextStyle(color: Colors.grey),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 1.0,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Colors.black,
-                            width: 1.5,
-                          ),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 18,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
 
                     // 5. Email or NIK Text Field
                     TextField(

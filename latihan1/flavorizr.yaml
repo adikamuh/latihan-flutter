@@ -3,7 +3,7 @@ flavors:
     app:
       name: "STI Dev"
     android:
-      applicationId: "com.sumihai.hrms.dev" # ID unik untuk Playstore Dev
+      applicationId: "com.sumihai.hrms.dev"
     ios:
       bundleId: "com.sumihai.hrms.dev"
 
