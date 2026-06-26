@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 final Logarte logarte = Logarte();
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await initDependecies();
   runApp(const MainApp());
 }

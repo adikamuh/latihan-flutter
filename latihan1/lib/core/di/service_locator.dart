@@ -24,7 +24,9 @@ Future<void> initDependecies() async {
   );
 
   /// Repositories
-  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
+  sl.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(sl(), sl()),
+  );
 
   /// Usecases
   sl.registerLazySingleton(() => LoginUsecase(sl()));
