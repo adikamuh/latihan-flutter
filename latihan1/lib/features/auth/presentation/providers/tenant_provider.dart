@@ -1,67 +1,43 @@
-import 'dart:convert';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:latihan1/core/constants/app_const.dart';
-import 'package:latihan1/core/services/app_log.dart';
-import 'package:latihan1/core/services/secured_storage_service.dart';
-import 'package:latihan1/features/auth/data/models/tenant_payload.dart';
 import 'package:latihan1/features/auth/domain/entities/tenant_entity.dart';
-import 'package:latihan1/features/auth/domain/usecases/tenant_usecase.dart';
+import 'package:latihan1/features/auth/domain/usecases/get_tenant.dart';
+import 'package:latihan1/features/auth/domain/usecases/save_tenant.dart';
 
 class TenantProvider extends ChangeNotifier {
-  final TenantUsecase tenantUsecase;
-  TenantProvider({required this.tenantUsecase});
+  final GetTenant getTenant;
+  final SaveTenant saveTenant;
+
+  TenantProvider({required this.getTenant, required this.saveTenant});
 
   final TextEditingController codeController = TextEditingController();
+  TenantEntity? tenant;
 
-  String username = '';
-  TenantEntity? tenantData;
-  bool isLoading = false;
-  String errorMessage = '';
-
-  void setTenantData(TenantEntity? data) {
-    tenantData = data;
-    notifyListeners();
-  }
-
-  void setLoading(bool loading) {
-    isLoading = loading;
-    notifyListeners();
-  }
-
-  void setErrorMessage(String message) {
-    errorMessage = message;
-    notifyListeners();
-  }
-
-  Future<void> code() async {
-    setLoading(true);
+  Future<void> checkTenantCode() async {
     try {
-      final payload = TenantPayload(code: codeController.text);
-      final result = await tenantUsecase.call(payload);
-
-      if (result == null) {
-        setErrorMessage('Login failed: No data received');
-        return;
-      }
-      setTenantData(result);
-      await _saveTenantData(result);
-    } on DioException catch (e, s) {
-      AppLog.instance.logError('Verify code failed with DioException', e, s);
-      setErrorMessage('Verify code failed: ${e.message}');
-    } catch (e, s) {
-      AppLog.instance.logError('Verify code failed', e, s);
-      setErrorMessage('Verify code failed: ${e.toString()}');
-    } finally {
-      setLoading(false);
-    }
+      final tenant = await getTenant.call(codeController.text);
+      if (tenant != null) {
+        this.tenant = tenant;
+        // navigate to login
+      } else {}
+      // ignore: empty_catches
+    } catch (e) {}
   }
 
-  Future<void> _saveTenantData(TenantEntity data) async {
-    await SecuredStorageService.writeValue(
-      AppConst.keyUser,
-      jsonEncode(data.toJson()),
+  Future<void> submitCode() async {
+    final code = codeController.text;
+    // asumsi sudah berhasil get company by code
+    final tenantEntity = TenantEntity(
+      id: "id",
+      code: code,
+      name: "Company Name",
+      logo: "https://example.com/logo.png",
     );
+    tenant = tenantEntity;
+    notifyListeners();
+    await saveToLocalDB(tenantEntity);
+  }
+
+  Future<void> saveToLocalDB(TenantEntity tenant) async {
+    await saveTenant.call(tenant);
   }
 }

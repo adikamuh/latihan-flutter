@@ -6,6 +6,8 @@ flavors:
       applicationId: "com.sumihai.hrms.dev"
     ios:
       bundleId: "com.sumihai.hrms.dev"
+    env:
+      BASE_URL: "http://sumihai.ddns.net:13080"
 
   prod:
     app:
@@ -14,3 +16,5 @@ flavors:
       applicationId: "com.sumihai.hrms"
     ios:
       bundleId: "com.sumihai.hrms"
+    env:
+      BASE_URL: "http://sumihai.ddns.net:13080"

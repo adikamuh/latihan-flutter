@@ -1,19 +1,28 @@
+import 'package:latihan1/features/auth/data/models/tenant_entity_isar.dart';
+
 class TenantEntity {
-  final int? id;
+  final String? id;
   final String? name;
+  final String? code;
   final String? logo;
 
-  TenantEntity({this.id, this.name, this.logo});
+  TenantEntity({this.id, this.name, this.code, this.logo});
 
   factory TenantEntity.fromJson(Map<String, dynamic> json) {
     return TenantEntity(
-      id: json['id'] as int?,
+      id: json['id'] as String?,
       name: json['name'] as String?,
+      code: json['code'] as String?,
       logo: json['logo'] as String?,
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {'id': id, 'name': name, 'logo': logo};
+  TenantEntityIsar toIsar() {
+    return TenantEntityIsar(
+      id: id,
+      name: name ?? '',
+      code: code ?? '',
+      logo: logo ?? '',
+    );
   }
 }

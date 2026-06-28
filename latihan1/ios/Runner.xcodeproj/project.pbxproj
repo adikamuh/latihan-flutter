@@ -349,6 +349,14 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		0347C98EE581C30B2CB34726 /* Release-prod */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7FE16F9ACC6F9961CD0E3501 /* Flutter/prodRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-prod";
+		};
 		058EE740FE10B44540D69124 /* Debug-dev */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F9F62401A6945DE71A523728 /* Flutter/devDebug.xcconfig */;
@@ -557,6 +565,14 @@
 			};
 			name = Profile;
 		};
+		3C5491FEEAD06E7A0FFE4FDB /* Debug-dev */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F9F62401A6945DE71A523728 /* Flutter/devDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-dev";
+		};
 		4B0E310172A5D2C15B80D95D /* Debug-prod */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E0AEC994DED8319969B08681 /* Flutter/prodDebug.xcconfig */;
@@ -629,6 +645,14 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "Debug-prod";
+		};
+		601DC99763CC62DCBF32C523 /* Debug-prod */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E0AEC994DED8319969B08681 /* Flutter/prodDebug.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = "Debug-prod";
 		};
@@ -706,6 +730,14 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = "Debug-dev";
+		};
+		8B9DBB3BAA176990B4BBE3CE /* Profile-dev */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AE38585B537D64940C0F1C2A /* Flutter/devProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-dev";
 		};
 		9281D8DEBEA5C394F997972B /* Profile-prod */ = {
 			isa = XCBuildConfiguration;
@@ -947,6 +979,14 @@
 			};
 			name = "Profile-dev";
 		};
+		C8D6E1DEA37CB092CD803C6A /* Profile-prod */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = ABFDFEA2E9992C666F1F1E4E /* Flutter/prodProfile.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Profile-prod";
+		};
 		C8ED325D05841029E8C72540 /* Release-prod */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7FE16F9ACC6F9961CD0E3501 /* Flutter/prodRelease.xcconfig */;
@@ -1105,6 +1145,14 @@
 			};
 			name = "Profile-prod";
 		};
+		F591CBBF92288804334CC04B /* Release-dev */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5AE0D73E0AF5BB8F9B205389 /* Flutter/devRelease.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-dev";
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1146,6 +1194,12 @@
 				97637D60AE7A07395396470E /* Debug-prod */,
 				9281D8DEBEA5C394F997972B /* Profile-prod */,
 				C8ED325D05841029E8C72540 /* Release-prod */,
+				3C5491FEEAD06E7A0FFE4FDB /* Debug-dev */,
+				8B9DBB3BAA176990B4BBE3CE /* Profile-dev */,
+				F591CBBF92288804334CC04B /* Release-dev */,
+				601DC99763CC62DCBF32C523 /* Debug-prod */,
+				C8D6E1DEA37CB092CD803C6A /* Profile-prod */,
+				0347C98EE581C30B2CB34726 /* Release-prod */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
