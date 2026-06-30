@@ -18,7 +18,7 @@ const TenantEntityIsarSchema = CollectionSchema(
   id: -460849723902842468,
   properties: {
     r'code': PropertySchema(id: 0, name: r'code', type: IsarType.string),
-    r'id': PropertySchema(id: 1, name: r'id', type: IsarType.string),
+    r'id': PropertySchema(id: 1, name: r'id', type: IsarType.long),
     r'logo': PropertySchema(id: 2, name: r'logo', type: IsarType.string),
     r'name': PropertySchema(id: 3, name: r'name', type: IsarType.string),
   },
@@ -51,12 +51,6 @@ int _tenantEntityIsarEstimateSize(
     }
   }
   {
-    final value = object.id;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
-  {
     final value = object.logo;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -78,7 +72,7 @@ void _tenantEntityIsarSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.code);
-  writer.writeString(offsets[1], object.id);
+  writer.writeLong(offsets[1], object.id);
   writer.writeString(offsets[2], object.logo);
   writer.writeString(offsets[3], object.name);
 }
@@ -91,7 +85,7 @@ TenantEntityIsar _tenantEntityIsarDeserialize(
 ) {
   final object = TenantEntityIsar(
     code: reader.readStringOrNull(offsets[0]),
-    id: reader.readStringOrNull(offsets[1]),
+    id: reader.readLongOrNull(offsets[1]),
     idIsar: id,
     logo: reader.readStringOrNull(offsets[2]),
     name: reader.readStringOrNull(offsets[3]),
@@ -109,7 +103,7 @@ P _tenantEntityIsarDeserializeProp<P>(
     case 0:
       return (reader.readStringOrNull(offset)) as P;
     case 1:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
@@ -394,45 +388,35 @@ extension TenantEntityIsarQueryFilter
   }
 
   QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  idEqualTo(String? value, {bool caseSensitive = true}) {
+  idEqualTo(int? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'id',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
+        FilterCondition.equalTo(property: r'id', value: value),
       );
     });
   }
 
   QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  idGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
+  idGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
           include: include,
           property: r'id',
           value: value,
-          caseSensitive: caseSensitive,
         ),
       );
     });
   }
 
   QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  idLessThan(String? value, {bool include = false, bool caseSensitive = true}) {
+  idLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
           include: include,
           property: r'id',
           value: value,
-          caseSensitive: caseSensitive,
         ),
       );
     });
@@ -440,11 +424,10 @@ extension TenantEntityIsarQueryFilter
 
   QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
   idBetween(
-    String? lower,
-    String? upper, {
+    int? lower,
+    int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -454,78 +437,7 @@ extension TenantEntityIsarQueryFilter
           includeLower: includeLower,
           upper: upper,
           includeUpper: includeUpper,
-          caseSensitive: caseSensitive,
         ),
-      );
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  idStartsWith(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.startsWith(
-          property: r'id',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  idEndsWith(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.endsWith(
-          property: r'id',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  idContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.contains(
-          property: r'id',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  idMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.matches(
-          property: r'id',
-          wildcard: pattern,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  idIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'id', value: ''),
-      );
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  idIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(property: r'id', value: ''),
       );
     });
   }
@@ -1044,11 +956,9 @@ extension TenantEntityIsarQueryWhereDistinct
     });
   }
 
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QDistinct> distinctById({
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QDistinct> distinctById() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'id', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'id');
     });
   }
 
@@ -1083,7 +993,7 @@ extension TenantEntityIsarQueryProperty
     });
   }
 
-  QueryBuilder<TenantEntityIsar, String?, QQueryOperations> idProperty() {
+  QueryBuilder<TenantEntityIsar, int?, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
     });

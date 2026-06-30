@@ -29,7 +29,7 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [Provider(create: (_) => AuthProvider(loginUsecase: sl()))],
+      providers: [Provider.value(value: sl<AuthProvider>())],
       child: const MaterialApp(home: SplashView()),
     );
   }

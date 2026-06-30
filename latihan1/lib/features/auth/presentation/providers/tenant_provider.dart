@@ -10,31 +10,61 @@ class TenantProvider extends ChangeNotifier {
   TenantProvider({required this.getTenant, required this.saveTenant});
 
   final TextEditingController codeController = TextEditingController();
-  TenantEntity? tenant;
 
-  Future<void> checkTenantCode() async {
-    try {
-      final tenant = await getTenant.call(codeController.text);
-      if (tenant != null) {
-        this.tenant = tenant;
-        // navigate to login
-      } else {}
-      // ignore: empty_catches
-    } catch (e) {}
+  bool isLoading = false;
+  String errorMessage = '';
+  String? logoUrl;
+  TenantEntity? companyData;
+
+  void _setLoading(bool loading) {
+    isLoading = loading;
+    notifyListeners();
+  }
+
+  void _setErrorMessage(String message) {
+    errorMessage = message;
+    notifyListeners();
+  }
+
+  void _setLogoUrl(String? url) {
+    logoUrl = url;
+    notifyListeners();
+  }
+
+  void _setCompanyData(TenantEntity? data) {
+    companyData = data;
+    notifyListeners();
   }
 
   Future<void> submitCode() async {
-    final code = codeController.text;
-    // asumsi sudah berhasil get company by code
-    final tenantEntity = TenantEntity(
-      id: "id",
-      code: code,
-      name: "Company Name",
-      logo: "https://example.com/logo.png",
-    );
-    tenant = tenantEntity;
-    notifyListeners();
-    await saveToLocalDB(tenantEntity);
+    final code = codeController.text.trim();
+    if (code.isEmpty) {
+      _setErrorMessage('Please enter your company code');
+      return;
+    }
+
+    _setLoading(true);
+    _setErrorMessage('');
+    _setLogoUrl(null);
+    _setCompanyData(null);
+
+    try {
+      final result = await getTenant.call(code);
+
+      if (result != null) {
+        _setLogoUrl(result.logo ?? '');
+        _setCompanyData(result);
+
+        await saveToLocalDB(result);
+      } else {
+        _setErrorMessage('Company code is invalid or not found');
+      }
+    } catch (e) {
+      _setErrorMessage('Failed to connect to server. Please try again.');
+      print('Error: $e');
+    } finally {
+      _setLoading(false);
+    }
   }
 
   Future<void> saveToLocalDB(TenantEntity tenant) async {

@@ -10,7 +10,7 @@ class TenantResponse extends AppBaseResponse<TenantEntity> {
 
   factory TenantResponse.fromJson(Map<String, dynamic> json) {
     return TenantResponse(
-      success: json['success'] as String?,
+      success: json['success'] as bool,
       message: json['message'] as String?,
       data: json['data'] != null
           ? TenantEntity.fromJson(json['data'] as Map<String, dynamic>)

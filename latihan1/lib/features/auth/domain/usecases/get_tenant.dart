@@ -6,7 +6,7 @@ class GetTenant {
 
   GetTenant(this.repository);
 
-  Future<TenantEntity?> call(String code) async {
+  Future<TenantEntity?> call(String? code) async {
     return await repository.getTenant(code);
   }
 }

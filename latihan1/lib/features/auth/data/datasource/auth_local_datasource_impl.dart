@@ -7,11 +7,8 @@ class AuthLocalDatasourceImpl implements AuthLocalDatasource {
   AuthLocalDatasourceImpl(this._isar);
 
   @override
-  Future<TenantEntityIsar?> getTenant(String code) async {
-    final tenant = await _isar.tenantEntityIsars
-        .filter()
-        .codeEqualTo(code)
-        .findFirst();
+  Future<TenantEntityIsar?> getTenant() async {
+    final tenant = await _isar.tenantEntityIsars.where().limit(1).findFirst();
     return tenant;
   }
 

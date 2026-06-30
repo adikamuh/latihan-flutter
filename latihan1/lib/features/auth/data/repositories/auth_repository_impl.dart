@@ -30,9 +30,27 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> logout() => throw UnimplementedError();
 
   @override
-  Future<TenantEntity?> getTenant(String code) async {
-    final tenant = await _localDatasource.getTenant(code);
-    return tenant;
+  Future<TenantEntity?> getTenant(String? code) async {
+    final localTenant = await _localDatasource.getTenant();
+
+    if (localTenant != null) {
+      return localTenant;
+    }
+
+    if (code == null || code.isEmpty) {
+      throw Exception('Code is required to fetch tenant data');
+    }
+
+    final payload = TenantPayload(code: code);
+    final result = await _datasource.code(payload);
+
+    if (result.data != null) {
+      await _localDatasource.saveTenant(result.data!.toIsar());
+
+      return result.data;
+    }
+
+    return null;
   }
 
   @override

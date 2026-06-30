@@ -7,13 +7,15 @@ import 'package:latihan1/core/services/app_log.dart';
 import 'package:latihan1/core/services/secured_storage_service.dart';
 import 'package:latihan1/features/auth/data/models/login_payload.dart';
 import 'package:latihan1/features/auth/domain/entities/login_entity.dart';
+import 'package:latihan1/features/auth/domain/usecases/get_tenant.dart';
 import 'package:latihan1/features/auth/domain/usecases/login_usecase.dart';
 
 class AuthProvider extends ChangeNotifier {
   final LoginUsecase loginUsecase;
-  AuthProvider({required this.loginUsecase});
+  final GetTenant getTenantUsecase;
+  AuthProvider({required this.loginUsecase, required this.getTenantUsecase});
 
-  final TextEditingController codeController = TextEditingController();
+  String codeController = '';
   final TextEditingController loginController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
@@ -40,8 +42,13 @@ class AuthProvider extends ChangeNotifier {
   Future<void> login() async {
     setLoading(true);
     try {
+      final tenantCode = await getTenantUsecase.call(null);
+      if (tenantCode == null || (tenantCode.code?.isEmpty ?? true)) {
+        setErrorMessage('Tenant code not found');
+        return;
+      }
       final payload = LoginPayload(
-        code: codeController.text,
+        code: tenantCode.code!,
         login: loginController.text,
         password: passwordController.text,
       );

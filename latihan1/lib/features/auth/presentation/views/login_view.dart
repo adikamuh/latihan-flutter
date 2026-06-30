@@ -16,25 +16,19 @@ class _LoginViewState extends State<LoginView> {
   @override
   void initState() {
     super.initState();
-    // Mengambil instance AuthProvider dari GetIt
     _authProvider = sl<AuthProvider>();
   }
 
   @override
   void dispose() {
-    // Controller sudah di dispose oleh AuthProvider,
-    // namun kita tetap membersihkan provider jika perlu.
     super.dispose();
   }
 
   void _handleLogin() async {
-    // Menutup keyboard saat login ditekan
     FocusScope.of(context).unfocus();
 
-    // Panggil fungsi login dari provider
     await _authProvider.login();
 
-    // Cek jika login berhasil dan tidak ada error
     if (_authProvider.loginData != null && _authProvider.errorMessage.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -42,7 +36,6 @@ class _LoginViewState extends State<LoginView> {
         ).showSnackBar(const SnackBar(content: Text('Login Successful!')));
       }
     } else if (_authProvider.errorMessage.isNotEmpty) {
-      // Tampilkan pesan error jika ada
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -53,7 +46,6 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    // Menggunakan Consumer agar UI rebuild saat state di AuthProvider berubah
     return ChangeNotifierProvider.value(
       value: _authProvider,
       child: Consumer<AuthProvider>(
