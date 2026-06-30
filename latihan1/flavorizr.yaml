@@ -3,10 +3,9 @@ flavors:
     app:
       name: "STI Dev"
     android:
-      applicationId: "com.sumihai.hrms.dev" # ID unik untuk Playstore Dev
+      applicationId: "com.sumihai.hrms.dev"
     ios:
       bundleId: "com.sumihai.hrms.dev"
-    # Anda bisa tambahkan variabel custom di sini
     env:
       BASE_URL: "http://sumihai.ddns.net:13080"
 

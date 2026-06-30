@@ -1,5 +1,5 @@
 abstract class AppBaseResponse<T> {
-  final String? success;
+  final bool success;
   final String? message;
   final T? data;
   final AppBaseResponseMeta? meta;

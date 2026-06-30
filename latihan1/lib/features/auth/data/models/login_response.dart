@@ -10,7 +10,7 @@ class LoginResponse extends AppBaseResponse<LoginEntity> {
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
     return LoginResponse(
-      success: json['success'] as String?,
+      success: json['success'] as bool,
       message: json['message'] as String?,
       data: json['data'] != null
           ? LoginEntity.fromJson(json['data'] as Map<String, dynamic>)

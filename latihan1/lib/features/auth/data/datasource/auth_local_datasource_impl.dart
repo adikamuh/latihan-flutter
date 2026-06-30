@@ -1,26 +1,22 @@
 import 'package:isar_community/isar.dart';
-import 'package:latihan1/core/services/isar_service.dart';
 import 'package:latihan1/features/auth/data/datasource/auth_local_datasource.dart';
-import 'package:latihan1/features/auth/data/models/company_entity_isar.dart';
-import 'package:latihan1/features/auth/domain/entities/company_entity.dart';
+import 'package:latihan1/features/auth/data/models/tenant_entity_isar.dart';
 
 class AuthLocalDatasourceImpl implements AuthLocalDatasource {
   final Isar _isar;
   AuthLocalDatasourceImpl(this._isar);
 
   @override
-  Future<CompanyEntityIsar?> getCompanyByCode(String code) async {
-    final company = await _isar.companyEntityIsars
-        .filter()
-        .codeEqualTo(code)
-        .findFirst();
-    return company;
+  Future<TenantEntityIsar?> getTenant() async {
+    final tenant = await _isar.tenantEntityIsars.where().limit(1).findFirst();
+    return tenant;
   }
 
   @override
-  Future<void> saveCompanyToLocalDB(CompanyEntityIsar company) async {
+  Future<void> saveTenant(TenantEntityIsar tenant) async {
+    await _isar.tenantEntityIsars.clear();
     await _isar.writeTxn(() async {
-      await _isar.companyEntityIsars.put(company);
+      await _isar.tenantEntityIsars.put(tenant);
     });
   }
 }

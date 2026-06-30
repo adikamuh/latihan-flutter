@@ -1,5 +1,5 @@
 import 'package:isar_community/isar.dart';
-import 'package:latihan1/features/auth/data/models/company_entity_isar.dart';
+import 'package:latihan1/features/auth/data/models/tenant_entity_isar.dart';
 import 'package:path_provider/path_provider.dart';
 
 class IsarService {
@@ -9,7 +9,7 @@ class IsarService {
   static Future<void> init() async {
     final dir = await getApplicationDocumentsDirectory();
     _isar = await Isar.open(
-      [CompanyEntityIsarSchema],
+      [TenantEntityIsarSchema],
       directory: dir.path,
       inspector: true,
     );

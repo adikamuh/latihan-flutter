@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:latihan1/core/di/service_locator.dart';
 import 'package:latihan1/features/auth/presentation/providers/auth_provider.dart';
+import 'package:latihan1/features/auth/presentation/providers/tenant_provider.dart';
 import 'package:provider/provider.dart';
 
 class LoginView extends StatefulWidget {
@@ -16,35 +17,26 @@ class _LoginViewState extends State<LoginView> {
   @override
   void initState() {
     super.initState();
-    // Mengambil instance AuthProvider dari GetIt
     _authProvider = sl<AuthProvider>();
   }
 
   @override
   void dispose() {
-    // Controller sudah di dispose oleh AuthProvider,
-    // namun kita tetap membersihkan provider jika perlu.
     super.dispose();
   }
 
   void _handleLogin() async {
-    // Menutup keyboard saat login ditekan
     FocusScope.of(context).unfocus();
 
-    // Panggil fungsi login dari provider
     await _authProvider.login();
 
-    // Cek jika login berhasil dan tidak ada error
     if (_authProvider.loginData != null && _authProvider.errorMessage.isEmpty) {
-      // TODO: Arahkan ke halaman Home/Dashboard di sini
-      // Example: Navigator.pushReplacementNamed(context, '/home');
       if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Login Successful!')));
       }
     } else if (_authProvider.errorMessage.isNotEmpty) {
-      // Tampilkan pesan error jika ada
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -55,11 +47,10 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    // Menggunakan Consumer agar UI rebuild saat state di AuthProvider berubah
     return ChangeNotifierProvider.value(
       value: _authProvider,
-      child: Consumer<AuthProvider>(
-        builder: (context, provider, child) {
+      child: Consumer2<AuthProvider, TenantProvider>(
+        builder: (context, authProvider, tenantProvider, child) {
           return Scaffold(
             backgroundColor: Colors.white,
             body: SafeArea(
@@ -74,13 +65,19 @@ class _LoginViewState extends State<LoginView> {
                     const SizedBox(height: 60),
 
                     // 1. Company Logo
-                    const Text(
-                      "[Company Logo]",
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+                    SizedBox(
+                      height: 120,
+                      width: 120,
+                      child:
+                          tenantProvider.logoUrl != null &&
+                              tenantProvider.logoUrl!.isNotEmpty
+                          ? Image.network(
+                              tenantProvider.logoUrl!,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const FlutterLogo(size: 100);
+                              },
+                            )
+                          : const FlutterLogo(size: 100),
                     ),
 
                     const SizedBox(height: 80),
@@ -110,39 +107,9 @@ class _LoginViewState extends State<LoginView> {
 
                     const SizedBox(height: 40),
 
-                    // 4. Code Text Field (Baru ditambahkan sesuai request)
-                    TextField(
-                      controller: provider.codeController,
-                      decoration: InputDecoration(
-                        labelText: "Code",
-                        labelStyle: const TextStyle(color: Colors.grey),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                            width: 1.0,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Colors.black,
-                            width: 1.5,
-                          ),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 18,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
                     // 5. Email or NIK Text Field
                     TextField(
-                      controller: provider.loginController,
+                      controller: authProvider.loginController,
                       decoration: InputDecoration(
                         labelText: "Email or NIK",
                         labelStyle: const TextStyle(color: Colors.grey),
@@ -172,7 +139,7 @@ class _LoginViewState extends State<LoginView> {
 
                     // 6. Password Text Field
                     TextField(
-                      controller: provider.passwordController,
+                      controller: authProvider.passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: "Password",
@@ -206,7 +173,7 @@ class _LoginViewState extends State<LoginView> {
                       width: double.infinity,
                       height: 55,
                       child: ElevatedButton(
-                        onPressed: provider.isLoading ? null : _handleLogin,
+                        onPressed: authProvider.isLoading ? null : _handleLogin,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,
                           foregroundColor: Colors.white,
@@ -215,7 +182,7 @@ class _LoginViewState extends State<LoginView> {
                           ),
                           elevation: 0,
                         ),
-                        child: provider.isLoading
+                        child: authProvider.isLoading
                             ? const SizedBox(
                                 height: 24,
                                 width: 24,
