@@ -53,7 +53,7 @@ class DioClient {
     // _dio.interceptors.add(LogarteDioInterceptor(logService.logarte));
     // _dio.transformer = AppTransformer();
     _dio.interceptors.add(
-      CacheInterceptor(CacheManager(SharedPrefService.pref)),
+      CacheInterceptor(cacheManager: CacheManager(SharedPrefService.pref)),
     );
   }
 

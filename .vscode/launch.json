@@ -5,26 +5,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Development",
+      "name": "dev",
       "cwd": "latihan1",
       "request": "launch",
-      "type": "dart",
       "program": "lib/main.dart",
+      "type": "dart",
       "args": ["--flavor", "dev", "--dart-define-from-file=.env.dev.json"]
-    },
-    {
-      "name": "latihan1 (profile mode)",
-      "cwd": "latihan1",
-      "request": "launch",
-      "type": "dart",
-      "flutterMode": "profile"
-    },
-    {
-      "name": "latihan1 (release mode)",
-      "cwd": "latihan1",
-      "request": "launch",
-      "type": "dart",
-      "flutterMode": "release"
     }
   ]
 }

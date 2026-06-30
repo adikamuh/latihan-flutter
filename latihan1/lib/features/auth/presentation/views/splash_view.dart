@@ -11,17 +11,19 @@ class SplashView extends StatefulWidget {
 }
 
 class _SplashViewState extends State<SplashView> {
+  late final SplashProvider _splashProvider;
+
   @override
   void initState() {
     super.initState();
+    _splashProvider = SplashProvider(getTenantUsecase: sl());
+    _splashProvider.checkTenant(null);
   }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) =>
-          SplashProvider(getTenantUsecase: sl())
-            ..checkTenant(null), // You can provide a provider here if needed
+    return ChangeNotifierProvider.value(
+      value: _splashProvider,
       child: Scaffold(
         backgroundColor: Colors.white,
         body: Center(

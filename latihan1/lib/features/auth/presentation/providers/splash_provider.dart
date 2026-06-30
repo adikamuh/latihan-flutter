@@ -22,7 +22,10 @@ class SplashProvider extends ChangeNotifier {
         );
       }
     } catch (e, s) {
-      AppLog.instance.logError("error", e, s);
+      AppLog.instance.logError("Error checking tenant", e, s);
+      Navigator.of(
+        navigatorKey.currentContext!,
+      ).pushReplacement(MaterialPageRoute(builder: (context) => TenantView()));
     }
   }
 }

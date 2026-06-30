@@ -7,10 +7,9 @@ class CacheInterceptor extends Interceptor {
   final CacheManager _cacheManager;
   final Duration _defaultCacheDuration;
 
-  CacheInterceptor(
-    this._cacheManager, {
-    this._defaultCacheDuration = const Duration(minutes: 5),
-  });
+  CacheInterceptor({required CacheManager cacheManager})
+    : _cacheManager = cacheManager,
+      _defaultCacheDuration = const Duration(minutes: 5);
 
   @override
   Future<void> onRequest(
