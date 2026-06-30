@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:latihan1/core/di/service_locator.dart';
 import 'package:latihan1/features/auth/presentation/providers/auth_provider.dart';
+import 'package:latihan1/features/auth/presentation/providers/tenant_provider.dart';
 import 'package:provider/provider.dart';
 
 class LoginView extends StatefulWidget {
@@ -48,8 +49,8 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: _authProvider,
-      child: Consumer<AuthProvider>(
-        builder: (context, provider, child) {
+      child: Consumer2<AuthProvider, TenantProvider>(
+        builder: (context, authProvider, tenantProvider, child) {
           return Scaffold(
             backgroundColor: Colors.white,
             body: SafeArea(
@@ -64,13 +65,19 @@ class _LoginViewState extends State<LoginView> {
                     const SizedBox(height: 60),
 
                     // 1. Company Logo
-                    const Text(
-                      "[Company Logo]",
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+                    SizedBox(
+                      height: 120,
+                      width: 120,
+                      child:
+                          tenantProvider.logoUrl != null &&
+                              tenantProvider.logoUrl!.isNotEmpty
+                          ? Image.network(
+                              tenantProvider.logoUrl!,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const FlutterLogo(size: 100);
+                              },
+                            )
+                          : const FlutterLogo(size: 100),
                     ),
 
                     const SizedBox(height: 80),
@@ -102,7 +109,7 @@ class _LoginViewState extends State<LoginView> {
 
                     // 5. Email or NIK Text Field
                     TextField(
-                      controller: provider.loginController,
+                      controller: authProvider.loginController,
                       decoration: InputDecoration(
                         labelText: "Email or NIK",
                         labelStyle: const TextStyle(color: Colors.grey),
@@ -132,7 +139,7 @@ class _LoginViewState extends State<LoginView> {
 
                     // 6. Password Text Field
                     TextField(
-                      controller: provider.passwordController,
+                      controller: authProvider.passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: "Password",
@@ -166,7 +173,7 @@ class _LoginViewState extends State<LoginView> {
                       width: double.infinity,
                       height: 55,
                       child: ElevatedButton(
-                        onPressed: provider.isLoading ? null : _handleLogin,
+                        onPressed: authProvider.isLoading ? null : _handleLogin,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,
                           foregroundColor: Colors.white,
@@ -175,7 +182,7 @@ class _LoginViewState extends State<LoginView> {
                           ),
                           elevation: 0,
                         ),
-                        child: provider.isLoading
+                        child: authProvider.isLoading
                             ? const SizedBox(
                                 height: 24,
                                 width: 24,

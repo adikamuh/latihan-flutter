@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:latihan1/core/di/service_locator.dart';
 import 'package:latihan1/features/auth/presentation/providers/auth_provider.dart';
+import 'package:latihan1/features/auth/presentation/providers/tenant_provider.dart';
 import 'package:latihan1/features/auth/presentation/views/splash_view.dart';
 import 'package:logarte/logarte.dart';
 import 'package:provider/provider.dart';
 
 final Logarte logarte = Logarte();
-
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initDependecies();
@@ -29,8 +30,11 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [Provider.value(value: sl<AuthProvider>())],
-      child: const MaterialApp(home: SplashView()),
+      providers: [
+        ChangeNotifierProvider.value(value: sl<AuthProvider>()),
+        ChangeNotifierProvider.value(value: sl<TenantProvider>()),
+      ],
+      child: MaterialApp(navigatorKey: navigatorKey, home: SplashView()),
     );
   }
 }
