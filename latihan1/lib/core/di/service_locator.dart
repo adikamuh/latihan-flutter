@@ -1,4 +1,5 @@
 import 'package:isar_community/isar.dart';
+import 'package:latihan1/core/services/device_info_service.dart';
 import 'package:latihan1/core/services/dio_client.dart';
 import 'package:latihan1/core/services/env_service.dart';
 import 'package:latihan1/core/services/isar_service.dart';
@@ -14,6 +15,7 @@ import 'package:latihan1/features/auth/domain/usecases/login_usecase.dart';
 import 'package:latihan1/features/auth/domain/usecases/save_tenant.dart';
 import 'package:latihan1/features/auth/domain/usecases/tenant_usecase.dart';
 import 'package:latihan1/features/auth/presentation/providers/auth_provider.dart';
+import 'package:latihan1/features/auth/presentation/providers/splash_provider.dart';
 import 'package:latihan1/features/auth/presentation/providers/tenant_provider.dart';
 import 'package:get_it/get_it.dart';
 
@@ -36,6 +38,8 @@ Future<void> initDependecies() async {
     () => AuthLocalDatasourceImpl(sl<Isar>()),
   );
 
+  sl.registerLazySingleton<DeviceInfoService>(() => DeviceInfoService());
+
   /// Repositories
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(sl(), sl()),
@@ -48,11 +52,17 @@ Future<void> initDependecies() async {
   sl.registerLazySingleton<SaveTenant>(() => SaveTenant(sl()));
 
   /// Providers
+  sl.registerLazySingleton<SplashProvider>(
+    () => SplashProvider(getTenantUsecase: sl()),
+  );
   sl.registerLazySingleton<TenantProvider>(
     () => TenantProvider(getTenant: sl(), saveTenant: sl()),
   );
-
   sl.registerLazySingleton<AuthProvider>(
-    () => AuthProvider(loginUsecase: sl(), getTenantUsecase: sl()),
+    () => AuthProvider(
+      loginUsecase: sl(),
+      getTenantUsecase: sl(),
+      deviceInfoService: sl(),
+    ),
   );
 }

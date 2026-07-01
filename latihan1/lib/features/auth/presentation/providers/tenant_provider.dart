@@ -61,6 +61,7 @@ class TenantProvider extends ChangeNotifier {
       }
     } catch (e) {
       _setErrorMessage('Failed to connect to server. Please try again.');
+      // ignore: avoid_print
       print('Error: $e');
     } finally {
       _setLoading(false);

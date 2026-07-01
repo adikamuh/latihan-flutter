@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:latihan1/core/services/app_log.dart';
 import 'package:latihan1/features/auth/domain/usecases/get_tenant.dart';
 import 'package:latihan1/features/auth/presentation/views/login_view.dart';
 import 'package:latihan1/features/auth/presentation/views/tenant_view.dart';
@@ -20,9 +21,11 @@ class SplashProvider extends ChangeNotifier {
           MaterialPageRoute(builder: (context) => TenantView()),
         );
       }
-    } catch (e) {
-      // Handle any errors that occur during the tenant check
-      // You can show an error message or log the error here
+    } catch (e, s) {
+      AppLog.instance.logError("Error checking tenant", e, s);
+      Navigator.of(
+        navigatorKey.currentContext!,
+      ).pushReplacement(MaterialPageRoute(builder: (context) => TenantView()));
     }
   }
 }

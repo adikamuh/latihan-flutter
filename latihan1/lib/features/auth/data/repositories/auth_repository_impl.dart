@@ -35,9 +35,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
     if (localTenant != null) {
       return localTenant;
-    }
-
-    if (code == null || code.isEmpty) {
+    } else if (code == null || code.isEmpty) {
       throw Exception('Code is required to fetch tenant data');
     }
 

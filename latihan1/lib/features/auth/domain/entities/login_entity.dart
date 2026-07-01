@@ -5,7 +5,7 @@ class LoginEntity {
   final String? ename;
   final int? pid;
   final int? currentCompany;
-  final String? allowedCompanies;
+  final List<dynamic>? allowedCompanies;
   final String? accessToken;
   final int? expiresIn;
   final String? expiresAt;
@@ -39,7 +39,7 @@ class LoginEntity {
       ename: json['ename'] as String?,
       pid: json['pid'] as int?,
       currentCompany: json['current_company'] as int?,
-      allowedCompanies: json['allowed_companies'] as String?,
+      allowedCompanies: json['allowed_companies'] as List<dynamic>?,
       accessToken: json['access_token'] as String?,
       expiresIn: json['expires_in'] as int?,
       expiresAt: json['expires_at'] as String?,

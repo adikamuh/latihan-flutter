@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:latihan1/core/constants/app_const.dart';
 import 'package:latihan1/core/services/app_log.dart';
+import 'package:latihan1/core/services/device_info_service.dart';
 import 'package:latihan1/core/services/secured_storage_service.dart';
 import 'package:latihan1/features/auth/data/models/login_payload.dart';
 import 'package:latihan1/features/auth/domain/entities/login_entity.dart';
@@ -13,7 +14,12 @@ import 'package:latihan1/features/auth/domain/usecases/login_usecase.dart';
 class AuthProvider extends ChangeNotifier {
   final LoginUsecase loginUsecase;
   final GetTenant getTenantUsecase;
-  AuthProvider({required this.loginUsecase, required this.getTenantUsecase});
+  final DeviceInfoService deviceInfoService;
+  AuthProvider({
+    required this.loginUsecase,
+    required this.getTenantUsecase,
+    required this.deviceInfoService,
+  });
 
   String codeController = '';
   final TextEditingController loginController = TextEditingController();
@@ -42,6 +48,7 @@ class AuthProvider extends ChangeNotifier {
   Future<void> login() async {
     setLoading(true);
     try {
+      final deviceInfo = await deviceInfoService.getDeviceInfo();
       final tenantCode = await getTenantUsecase.call(null);
       if (tenantCode == null || (tenantCode.code?.isEmpty ?? true)) {
         setErrorMessage('Tenant code not found');
@@ -51,6 +58,8 @@ class AuthProvider extends ChangeNotifier {
         code: tenantCode.code!,
         login: loginController.text,
         password: passwordController.text,
+        deviceUuid: deviceInfo['deviceId'] as String? ?? '',
+        deviceInfo: deviceInfo['platform'] as String? ?? '',
       );
       final result = await loginUsecase.call(payload);
 
