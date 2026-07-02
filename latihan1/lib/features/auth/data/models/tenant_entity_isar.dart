@@ -12,6 +12,5 @@ class TenantEntityIsar extends TenantEntity {
     required super.name,
     required super.code,
     required super.logo,
-    required super.accessToken,
   });
 }

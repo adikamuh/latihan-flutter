@@ -16,7 +16,10 @@ class _SplashViewState extends State<SplashView> {
   @override
   void initState() {
     super.initState();
-    _splashProvider = SplashProvider(getTenantUsecase: sl());
+    _splashProvider = SplashProvider(
+      getTenantUsecase: sl(),
+      checkAuthUsecase: sl(),
+    );
     _splashProvider.checkTenant(null);
   }
 

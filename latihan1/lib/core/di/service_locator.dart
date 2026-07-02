@@ -53,16 +53,12 @@ Future<void> initDependecies() async {
 
   /// Providers
   sl.registerLazySingleton<SplashProvider>(
-    () => SplashProvider(getTenantUsecase: sl()),
+    () => SplashProvider(getTenantUsecase: sl(), checkAuthUsecase: sl()),
   );
   sl.registerLazySingleton<TenantProvider>(
     () => TenantProvider(getTenant: sl(), saveTenant: sl()),
   );
   sl.registerLazySingleton<AuthProvider>(
-    () => AuthProvider(
-      loginUsecase: sl(),
-      getTenantUsecase: sl(),
-      deviceInfoService: sl(),
-    ),
+    () => AuthProvider(loginUsecase: sl(), getTenantUsecase: sl()),
   );
 }

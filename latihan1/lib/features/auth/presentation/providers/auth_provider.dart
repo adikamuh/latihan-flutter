@@ -10,22 +10,18 @@ import 'package:latihan1/features/auth/data/models/login_payload.dart';
 import 'package:latihan1/features/auth/domain/entities/login_entity.dart';
 import 'package:latihan1/features/auth/domain/usecases/get_tenant.dart';
 import 'package:latihan1/features/auth/domain/usecases/login_usecase.dart';
+import 'package:latihan1/features/auth/presentation/views/main_view.dart';
+import 'package:latihan1/main.dart';
 
 class AuthProvider extends ChangeNotifier {
   final LoginUsecase loginUsecase;
   final GetTenant getTenantUsecase;
-  final DeviceInfoService deviceInfoService;
-  AuthProvider({
-    required this.loginUsecase,
-    required this.getTenantUsecase,
-    required this.deviceInfoService,
-  });
+
+  AuthProvider({required this.loginUsecase, required this.getTenantUsecase});
 
   final TextEditingController loginController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  String codeController = '';
-  String username = '';
   LoginEntity? loginData;
   bool isLoading = false;
   String errorMessage = '';
@@ -48,7 +44,7 @@ class AuthProvider extends ChangeNotifier {
   Future<void> login() async {
     setLoading(true);
     try {
-      final deviceInfo = await deviceInfoService.getDeviceInfo();
+      final deviceInfo = await DeviceInfoService().getDeviceInfo();
       final tenantCode = await getTenantUsecase.call(null);
       if (tenantCode == null || (tenantCode.code?.isEmpty ?? true)) {
         setErrorMessage('Tenant code not found');
@@ -66,9 +62,13 @@ class AuthProvider extends ChangeNotifier {
       if (result == null) {
         setErrorMessage('Login failed: No data received');
         return;
+      } else {
+        setLoginData(result);
+        await _saveLoginData(result);
+        Navigator.of(
+          navigatorKey.currentContext!,
+        ).pushReplacement(MaterialPageRoute(builder: (context) => MainView()));
       }
-      setLoginData(result);
-      await _saveLoginData(result);
     } on DioException catch (e, s) {
       AppLog.instance.logError('Login failed with DioException', e, s);
       setErrorMessage('Login failed: ${e.message}');

@@ -17,15 +17,10 @@ const TenantEntityIsarSchema = CollectionSchema(
   name: r'TenantEntityIsar',
   id: -460849723902842468,
   properties: {
-    r'accessToken': PropertySchema(
-      id: 0,
-      name: r'accessToken',
-      type: IsarType.string,
-    ),
-    r'code': PropertySchema(id: 1, name: r'code', type: IsarType.string),
-    r'id': PropertySchema(id: 2, name: r'id', type: IsarType.long),
-    r'logo': PropertySchema(id: 3, name: r'logo', type: IsarType.string),
-    r'name': PropertySchema(id: 4, name: r'name', type: IsarType.string),
+    r'code': PropertySchema(id: 0, name: r'code', type: IsarType.string),
+    r'id': PropertySchema(id: 1, name: r'id', type: IsarType.long),
+    r'logo': PropertySchema(id: 2, name: r'logo', type: IsarType.string),
+    r'name': PropertySchema(id: 3, name: r'name', type: IsarType.string),
   },
 
   estimateSize: _tenantEntityIsarEstimateSize,
@@ -49,12 +44,6 @@ int _tenantEntityIsarEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  {
-    final value = object.accessToken;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
   {
     final value = object.code;
     if (value != null) {
@@ -82,11 +71,10 @@ void _tenantEntityIsarSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.accessToken);
-  writer.writeString(offsets[1], object.code);
-  writer.writeLong(offsets[2], object.id);
-  writer.writeString(offsets[3], object.logo);
-  writer.writeString(offsets[4], object.name);
+  writer.writeString(offsets[0], object.code);
+  writer.writeLong(offsets[1], object.id);
+  writer.writeString(offsets[2], object.logo);
+  writer.writeString(offsets[3], object.name);
 }
 
 TenantEntityIsar _tenantEntityIsarDeserialize(
@@ -96,12 +84,11 @@ TenantEntityIsar _tenantEntityIsarDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = TenantEntityIsar(
-    accessToken: reader.readStringOrNull(offsets[0]),
-    code: reader.readStringOrNull(offsets[1]),
-    id: reader.readLongOrNull(offsets[2]),
+    code: reader.readStringOrNull(offsets[0]),
+    id: reader.readLongOrNull(offsets[1]),
     idIsar: id,
-    logo: reader.readStringOrNull(offsets[3]),
-    name: reader.readStringOrNull(offsets[4]),
+    logo: reader.readStringOrNull(offsets[2]),
+    name: reader.readStringOrNull(offsets[3]),
   );
   return object;
 }
@@ -116,12 +103,10 @@ P _tenantEntityIsarDeserializeProp<P>(
     case 0:
       return (reader.readStringOrNull(offset)) as P;
     case 1:
-      return (reader.readStringOrNull(offset)) as P;
-    case 2:
       return (reader.readLongOrNull(offset)) as P;
-    case 3:
+    case 2:
       return (reader.readStringOrNull(offset)) as P;
-    case 4:
+    case 3:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -225,165 +210,6 @@ extension TenantEntityIsarQueryWhere
 
 extension TenantEntityIsarQueryFilter
     on QueryBuilder<TenantEntityIsar, TenantEntityIsar, QFilterCondition> {
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  accessTokenIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNull(property: r'accessToken'),
-      );
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  accessTokenIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNotNull(property: r'accessToken'),
-      );
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  accessTokenEqualTo(String? value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'accessToken',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  accessTokenGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'accessToken',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  accessTokenLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'accessToken',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  accessTokenBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.between(
-          property: r'accessToken',
-          lower: lower,
-          includeLower: includeLower,
-          upper: upper,
-          includeUpper: includeUpper,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  accessTokenStartsWith(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.startsWith(
-          property: r'accessToken',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  accessTokenEndsWith(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.endsWith(
-          property: r'accessToken',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  accessTokenContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.contains(
-          property: r'accessToken',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  accessTokenMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.matches(
-          property: r'accessToken',
-          wildcard: pattern,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  accessTokenIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'accessToken', value: ''),
-      );
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
-  accessTokenIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(property: r'accessToken', value: ''),
-      );
-    });
-  }
-
   QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
   codeIsNull() {
     return QueryBuilder.apply(this, (query) {
@@ -998,20 +824,6 @@ extension TenantEntityIsarQueryLinks
 
 extension TenantEntityIsarQuerySortBy
     on QueryBuilder<TenantEntityIsar, TenantEntityIsar, QSortBy> {
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterSortBy>
-  sortByAccessToken() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'accessToken', Sort.asc);
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterSortBy>
-  sortByAccessTokenDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'accessToken', Sort.desc);
-    });
-  }
-
   QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterSortBy> sortByCode() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'code', Sort.asc);
@@ -1067,20 +879,6 @@ extension TenantEntityIsarQuerySortBy
 
 extension TenantEntityIsarQuerySortThenBy
     on QueryBuilder<TenantEntityIsar, TenantEntityIsar, QSortThenBy> {
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterSortBy>
-  thenByAccessToken() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'accessToken', Sort.asc);
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterSortBy>
-  thenByAccessTokenDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'accessToken', Sort.desc);
-    });
-  }
-
   QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterSortBy> thenByCode() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'code', Sort.asc);
@@ -1150,13 +948,6 @@ extension TenantEntityIsarQuerySortThenBy
 
 extension TenantEntityIsarQueryWhereDistinct
     on QueryBuilder<TenantEntityIsar, TenantEntityIsar, QDistinct> {
-  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QDistinct>
-  distinctByAccessToken({bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'accessToken', caseSensitive: caseSensitive);
-    });
-  }
-
   QueryBuilder<TenantEntityIsar, TenantEntityIsar, QDistinct> distinctByCode({
     bool caseSensitive = true,
   }) {
@@ -1193,13 +984,6 @@ extension TenantEntityIsarQueryProperty
   QueryBuilder<TenantEntityIsar, int, QQueryOperations> idIsarProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'idIsar');
-    });
-  }
-
-  QueryBuilder<TenantEntityIsar, String?, QQueryOperations>
-  accessTokenProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'accessToken');
     });
   }
 
