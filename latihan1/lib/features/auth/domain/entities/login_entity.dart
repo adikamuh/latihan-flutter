@@ -13,6 +13,7 @@ class LoginEntity {
   final String? lastCheckIn;
   final String? lastCheckOut;
   final String? attendanceState;
+  final String? photos;
 
   LoginEntity({
     this.uid,
@@ -29,6 +30,7 @@ class LoginEntity {
     this.lastCheckIn,
     this.lastCheckOut,
     this.attendanceState,
+    this.photos,
   });
 
   factory LoginEntity.fromJson(Map<String, dynamic> json) {
@@ -47,6 +49,7 @@ class LoginEntity {
       lastCheckIn: json['last_check_in'] as String?,
       lastCheckOut: json['last_check_out'] as String?,
       attendanceState: json['attendance_state'] as String?,
+      photos: json['photos'] as String?,
     );
   }
 
@@ -66,6 +69,24 @@ class LoginEntity {
       'last_check_in': lastCheckIn,
       'last_check_out': lastCheckOut,
       'attendance_state': attendanceState,
+      'photos': photos,
     };
+  }
+
+  String getCompany() {
+    if (currentCompany == null ||
+        allowedCompanies == null ||
+        allowedCompanies!.isEmpty) {
+      return "-";
+    } else {
+      try {
+        final company = allowedCompanies!.firstWhere(
+          (company) => company['id'] == currentCompany,
+        );
+        return company != null ? company['name'] as String : "-";
+      } catch (e) {
+        return "-";
+      }
+    }
   }
 }

@@ -18,7 +18,7 @@
             "request": "launch",
             "program": "lib/main.dart",
             "type": "dart",
-            "args": ["--flavor", "prod", "--dart-define-from-file=.env.dev.json"]
+            "args": ["--flavor", "prod", "--dart-define-from-file=.env.prod.json"]
         }
     ]
 }

@@ -23,6 +23,7 @@ class DioClient {
         headers: {'Content-Type': 'application/json; charset=UTF-8'},
       ),
     );
+    // _dio.interceptors.add(LogarteDioInterceptor(logarte));
     _dio.interceptors.add(
       PrettyDioLogger(
         request: true,

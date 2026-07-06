@@ -1,5 +1,4 @@
 import 'package:isar_community/isar.dart';
-import 'package:latihan1/core/services/device_info_service.dart';
 import 'package:latihan1/core/services/dio_client.dart';
 import 'package:latihan1/core/services/env_service.dart';
 import 'package:latihan1/core/services/isar_service.dart';
@@ -10,6 +9,7 @@ import 'package:latihan1/features/auth/data/datasource/auth_local_datasource.dar
 import 'package:latihan1/features/auth/data/datasource/auth_local_datasource_impl.dart';
 import 'package:latihan1/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:latihan1/features/auth/domain/repositories/auth_repository.dart';
+import 'package:latihan1/features/auth/domain/usecases/check_auth.dart';
 import 'package:latihan1/features/auth/domain/usecases/get_tenant.dart';
 import 'package:latihan1/features/auth/domain/usecases/login_usecase.dart';
 import 'package:latihan1/features/auth/domain/usecases/save_tenant.dart';
@@ -24,6 +24,7 @@ final sl = GetIt.instance;
 Future<void> initDependecies() async {
   await EnvService.init();
   await SharedPrefService.init();
+
   DioClient.init();
   await IsarService.init();
 
@@ -38,8 +39,6 @@ Future<void> initDependecies() async {
     () => AuthLocalDatasourceImpl(sl<Isar>()),
   );
 
-  sl.registerLazySingleton<DeviceInfoService>(() => DeviceInfoService());
-
   /// Repositories
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(sl(), sl()),
@@ -50,6 +49,7 @@ Future<void> initDependecies() async {
   sl.registerLazySingleton<TenantUsecase>(() => TenantUsecase(sl()));
   sl.registerLazySingleton<GetTenant>(() => GetTenant(sl()));
   sl.registerLazySingleton<SaveTenant>(() => SaveTenant(sl()));
+  sl.registerLazySingleton<CheckAuth>(() => CheckAuth(sl()));
 
   /// Providers
   sl.registerLazySingleton<SplashProvider>(
@@ -59,6 +59,10 @@ Future<void> initDependecies() async {
     () => TenantProvider(getTenant: sl(), saveTenant: sl()),
   );
   sl.registerLazySingleton<AuthProvider>(
-    () => AuthProvider(loginUsecase: sl(), getTenantUsecase: sl()),
+    () => AuthProvider(
+      loginUsecase: sl(),
+      getTenantUsecase: sl(),
+      authRepository: sl(),
+    ),
   );
 }

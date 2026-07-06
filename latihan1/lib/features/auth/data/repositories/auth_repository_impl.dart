@@ -1,5 +1,6 @@
 import 'package:latihan1/core/services/dio_client.dart';
 import 'package:latihan1/core/services/device_info_service.dart';
+import 'package:latihan1/core/services/secured_storage_service.dart';
 import 'package:latihan1/features/auth/data/datasource/auth_datasource.dart';
 import 'package:latihan1/features/auth/data/datasource/auth_local_datasource.dart';
 import 'package:latihan1/features/auth/data/models/auth_payload.dart';
@@ -29,7 +30,12 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> logout() => throw UnimplementedError();
+  Future<void> logout() async {
+    await _localDatasource.clearAuth();
+    await _localDatasource.clearAll();
+    await SecuredStorageService.deleteAll();
+    DioClient.instance.clearToken();
+  }
 
   @override
   Future<TenantEntity?> getTenant(String? code) async {

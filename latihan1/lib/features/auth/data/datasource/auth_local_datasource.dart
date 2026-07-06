@@ -7,4 +7,5 @@ abstract class AuthLocalDatasource {
   Future<AuthEntityIsar?> checkAuth();
   Future<void> saveAuth(AuthEntityIsar auth);
   Future<void> clearAuth();
+  Future<void> clearAll();
 }

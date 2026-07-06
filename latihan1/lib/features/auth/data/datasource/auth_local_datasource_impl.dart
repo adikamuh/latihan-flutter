@@ -41,4 +41,12 @@ class AuthLocalDatasourceImpl implements AuthLocalDatasource {
       await _isar.authEntityIsars.clear();
     });
   }
+
+  @override
+  Future<void> clearAll() async {
+    await _isar.writeTxn(() async {
+      await _isar.tenantEntityIsars.clear();
+      await _isar.authEntityIsars.clear();
+    });
+  }
 }
