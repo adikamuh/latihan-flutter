@@ -26,8 +26,13 @@ class TenantProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _setLogoUrl(String? url) {
-    logoUrl = url;
+  void _setLogoUrl(String? url) async {
+    if (url == null || url.isEmpty) {
+      final tenantCode = await getTenant.call(null);
+      logoUrl = tenantCode?.logo!;
+    } else {
+      logoUrl = url;
+    }
     notifyListeners();
   }
 
@@ -61,6 +66,7 @@ class TenantProvider extends ChangeNotifier {
       }
     } catch (e) {
       _setErrorMessage('Failed to connect to server. Please try again.');
+      // ignore: avoid_print
       print('Error: $e');
     } finally {
       _setLoading(false);

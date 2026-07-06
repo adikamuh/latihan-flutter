@@ -1,23 +1,23 @@
-class LoginPayload {
+class AuthPayload {
   final String code;
   final String login;
-  final String password;
-  final String deviceUuid;
+  final String accessToken;
+  final String deviceId;
   final String deviceInfo;
 
-  LoginPayload({
+  AuthPayload({
     required this.code,
     required this.login,
-    required this.password,
-    required this.deviceUuid,
+    required this.accessToken,
+    required this.deviceId,
     required this.deviceInfo,
   });
 
   Map<String, dynamic> toJson() => {
     'code': code,
     'login': login,
-    'password': password,
-    'device_uuid': deviceUuid,
+    'access_token': accessToken,
+    'device_uuid': deviceId,
     'device_info': deviceInfo,
   };
 }

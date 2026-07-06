@@ -52,6 +52,15 @@ class _LoginViewState extends State<LoginView> {
       child: Consumer2<AuthProvider, TenantProvider>(
         builder: (context, authProvider, tenantProvider, child) {
           return Scaffold(
+            appBar: AppBar(
+              elevation: 0,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.black),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
             backgroundColor: Colors.white,
             body: SafeArea(
               child: SingleChildScrollView(
@@ -211,40 +220,6 @@ class _LoginViewState extends State<LoginView> {
                       child: const Text(
                         "Forgot Password?",
                         style: TextStyle(color: Colors.grey, fontSize: 14),
-                      ),
-                    ),
-
-                    const SizedBox(height: 30),
-
-                    // 9. Footer / Terms of Service
-                    RichText(
-                      textAlign: TextAlign.center,
-                      text: const TextSpan(
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 13,
-                          height: 1.5,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: "By clicking continue, you agree to our ",
-                          ),
-                          TextSpan(
-                            text: "Terms of Service",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextSpan(text: "\nand "),
-                          TextSpan(
-                            text: "Privacy Policy",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
                       ),
                     ),
                   ],

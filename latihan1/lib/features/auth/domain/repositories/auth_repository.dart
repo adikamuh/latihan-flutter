@@ -1,5 +1,6 @@
 import 'package:latihan1/features/auth/data/models/login_payload.dart';
 import 'package:latihan1/features/auth/data/models/tenant_payload.dart';
+import 'package:latihan1/features/auth/domain/entities/auth_entity.dart';
 import 'package:latihan1/features/auth/domain/entities/login_entity.dart';
 import 'package:latihan1/features/auth/domain/entities/tenant_entity.dart';
 
@@ -9,4 +10,5 @@ abstract class AuthRepository {
   Future<void> logout();
   Future<TenantEntity?> getTenant(String? code);
   Future<void> saveTenant(TenantEntity tenant);
+  Future<AuthEntity?> checkAuth();
 }

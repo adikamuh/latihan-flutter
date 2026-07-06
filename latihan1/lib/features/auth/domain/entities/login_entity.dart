@@ -5,7 +5,7 @@ class LoginEntity {
   final String? ename;
   final int? pid;
   final int? currentCompany;
-  final String? allowedCompanies;
+  final List<dynamic>? allowedCompanies;
   final String? accessToken;
   final int? expiresIn;
   final String? expiresAt;
@@ -13,6 +13,7 @@ class LoginEntity {
   final String? lastCheckIn;
   final String? lastCheckOut;
   final String? attendanceState;
+  final String? photos;
 
   LoginEntity({
     this.uid,
@@ -29,6 +30,7 @@ class LoginEntity {
     this.lastCheckIn,
     this.lastCheckOut,
     this.attendanceState,
+    this.photos,
   });
 
   factory LoginEntity.fromJson(Map<String, dynamic> json) {
@@ -39,7 +41,7 @@ class LoginEntity {
       ename: json['ename'] as String?,
       pid: json['pid'] as int?,
       currentCompany: json['current_company'] as int?,
-      allowedCompanies: json['allowed_companies'] as String?,
+      allowedCompanies: json['allowed_companies'] as List<dynamic>?,
       accessToken: json['access_token'] as String?,
       expiresIn: json['expires_in'] as int?,
       expiresAt: json['expires_at'] as String?,
@@ -47,6 +49,7 @@ class LoginEntity {
       lastCheckIn: json['last_check_in'] as String?,
       lastCheckOut: json['last_check_out'] as String?,
       attendanceState: json['attendance_state'] as String?,
+      photos: json['photos'] as String?,
     );
   }
 
@@ -66,6 +69,24 @@ class LoginEntity {
       'last_check_in': lastCheckIn,
       'last_check_out': lastCheckOut,
       'attendance_state': attendanceState,
+      'photos': photos,
     };
+  }
+
+  String getCompany() {
+    if (currentCompany == null ||
+        allowedCompanies == null ||
+        allowedCompanies!.isEmpty) {
+      return "-";
+    } else {
+      try {
+        final company = allowedCompanies!.firstWhere(
+          (company) => company['id'] == currentCompany,
+        );
+        return company != null ? company['name'] as String : "-";
+      } catch (e) {
+        return "-";
+      }
+    }
   }
 }

@@ -1,13 +1,15 @@
 import 'package:latihan1/core/constants/api_const.dart';
 import 'package:latihan1/core/services/dio_client.dart';
 import 'package:latihan1/features/auth/data/datasource/auth_datasource.dart';
+import 'package:latihan1/features/auth/data/models/auth_payload.dart';
+import 'package:latihan1/features/auth/data/models/auth_response.dart';
 import 'package:latihan1/features/auth/data/models/login_payload.dart';
 import 'package:latihan1/features/auth/data/models/login_response.dart';
 import 'package:latihan1/features/auth/data/models/tenant_payload.dart';
 import 'package:latihan1/features/auth/data/models/tenant_response.dart';
 
 class AuthDatasourceImpl implements AuthDatasource {
-  final DioClient _dioClient;
+  late final DioClient _dioClient;
   AuthDatasourceImpl(this._dioClient);
 
   @override
@@ -26,5 +28,14 @@ class AuthDatasourceImpl implements AuthDatasource {
       data: payload.toJson(),
     );
     return LoginResponse.fromJson(response.data);
+  }
+
+  @override
+  Future<AuthResponse> info(AuthPayload payload) async {
+    final response = await _dioClient.post(
+      ApiConst.info,
+      data: payload.toJson(),
+    );
+    return AuthResponse.fromJson(response.data);
   }
 }

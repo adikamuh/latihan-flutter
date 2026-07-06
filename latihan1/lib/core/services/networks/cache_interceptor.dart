@@ -8,6 +8,7 @@ class CacheInterceptor extends Interceptor {
   final Duration _defaultCacheDuration;
 
   CacheInterceptor({required CacheManager cacheManager})
+    // ignore: prefer_initializing_formals
     : _cacheManager = cacheManager,
       _defaultCacheDuration = const Duration(minutes: 5);
 

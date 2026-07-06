@@ -28,7 +28,7 @@ class _TenantViewState extends State<TenantView> {
 
     // Jika berhasil dan logo sudah terload, pindah ke LoginView
     if (mounted && _tenantProvider.companyData != null) {
-      Navigator.pushReplacement(
+      Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const LoginView()),
       );
