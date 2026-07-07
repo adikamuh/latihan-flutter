@@ -143,11 +143,11 @@ class _MainViewState extends State<MainView> {
                             fontSize: 12,
                           ),
                         ),
-                        const Text(
-                          "08:00 – 17:00 (Morning Shift)",
-                          style: TextStyle(color: Colors.white70, fontSize: 12),
-                        ),
-                        const SizedBox(height: 12),
+                        // const Text(
+                        //   "08:00 – 17:00 (Morning Shift)",
+                        //   style: TextStyle(color: Colors.white70, fontSize: 12),
+                        // ),
+                        // const SizedBox(height: 12),
                         Text(
                           "$clockLabel • $_currentTime",
                           style: const TextStyle(
