@@ -8,7 +8,7 @@ abstract class AuthRepository {
   Future<TenantEntity?> code(TenantPayload payload);
   Future<LoginEntity?> login(LoginPayload payload);
   Future<void> logout();
-  Future<TenantEntity?> getTenant(String? code);
+  Future<TenantEntity?> getTenant(String? code, bool forceRequest);
   Future<void> saveTenant(TenantEntity tenant);
   Future<AuthEntity?> checkAuth();
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:latihan1/core/di/service_locator.dart';
 import 'package:latihan1/features/auth/presentation/providers/auth_provider.dart';
 import 'package:latihan1/features/auth/presentation/providers/tenant_provider.dart';
+import 'package:latihan1/main.dart';
 import 'package:provider/provider.dart';
 
 class LoginView extends StatefulWidget {
@@ -57,7 +58,11 @@ class _LoginViewState extends State<LoginView> {
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.black),
                 onPressed: () {
-                  Navigator.pop(context);
+                  if (Navigator.canPop(context)) {
+                    Navigator.maybePop(context);
+                  } else {
+                    navigatorKey.currentState?.pop();
+                  }
                 },
               ),
             ),

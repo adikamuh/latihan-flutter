@@ -78,15 +78,15 @@ class LoginEntity {
         allowedCompanies == null ||
         allowedCompanies!.isEmpty) {
       return "-";
-    } else {
-      try {
-        final company = allowedCompanies!.firstWhere(
-          (company) => company['id'] == currentCompany,
-        );
-        return company != null ? company['name'] as String : "-";
-      } catch (e) {
-        return "-";
-      }
+    }
+    try {
+      final company = allowedCompanies!.firstWhere(
+        (company) => company['id'] == currentCompany,
+        orElse: () => null,
+      );
+      return company != null ? company['name'] as String : "-";
+    } catch (e) {
+      return "-";
     }
   }
 }

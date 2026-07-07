@@ -52,7 +52,7 @@ class AuthProvider extends ChangeNotifier {
     setLoading(true);
     try {
       final deviceInfo = await DeviceInfoService().getDeviceInfo();
-      final tenantCode = await getTenantUsecase.call(null);
+      final tenantCode = await getTenantUsecase.call(null, false);
       if (tenantCode == null || (tenantCode.code?.isEmpty ?? true)) {
         setErrorMessage('Tenant code not found');
         return;

@@ -1,10 +1,40 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:latihan1/core/di/service_locator.dart';
 import 'package:latihan1/features/auth/presentation/providers/auth_provider.dart';
-import 'package:latihan1/features/auth/presentation/providers/tenant_provider.dart';
 import 'package:provider/provider.dart';
 
-class MainView extends StatelessWidget {
+class MainView extends StatefulWidget {
   const MainView({super.key});
+
+  @override
+  State<MainView> createState() => _MainViewState();
+}
+
+class _MainViewState extends State<MainView> {
+  late final AuthProvider authProvider;
+  String _currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    authProvider = sl<AuthProvider>();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {
+          _currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,9 +43,22 @@ class MainView extends StatelessWidget {
     const Color accentGreen = Color(0xFFA1D645); // Warna hijau tombol
     const Color bgColor = Color(0xFFF6F8F6); // Warna background aplikasi
 
-    return Consumer2<AuthProvider, TenantProvider>(
-      builder: (context, authProvider, tenantProvider, child) {
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, child) {
         final userData = authProvider.loginData;
+        final String employeeName =
+            userData?.ename ?? userData?.uname ?? 'Guest User';
+        final String companyName = userData?.getCompany() ?? '-';
+        final String? photoUrl = userData?.photos;
+        final String todayDate = DateFormat(
+          'EEEE, d MMMM yyyy',
+        ).format(DateTime.now());
+
+        final String attendanceState =
+            userData?.attendanceState ?? 'checked_out';
+        final bool isCheckedIn = attendanceState == 'checked_in';
+        final String clockLabel = isCheckedIn ? 'Clock Out' : 'Clock In';
+        final String buttonLabel = isCheckedIn ? 'CHECK OUT' : 'CHECK IN';
 
         return Scaffold(
           backgroundColor: bgColor,
@@ -36,14 +79,19 @@ class MainView extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 22,
-                          backgroundImage: NetworkImage(userData!.photos!),
+                          backgroundImage:
+                              (photoUrl != null && photoUrl.isNotEmpty)
+                              ? NetworkImage(photoUrl)
+                              : const NetworkImage(
+                                  'http://sumihai.ddns.net:13080/logo',
+                                ),
                         ),
                         const SizedBox(width: 12),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              userData.ename!,
+                              employeeName,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -51,7 +99,7 @@ class MainView extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              userData.getCompany(),
+                              companyName,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey[600],
@@ -88,18 +136,21 @@ class MainView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          "Monday, 24 May 2026",
-                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                        Text(
+                          todayDate,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                          ),
                         ),
                         const Text(
                           "08:00 – 17:00 (Morning Shift)",
                           style: TextStyle(color: Colors.white70, fontSize: 12),
                         ),
                         const SizedBox(height: 12),
-                        const Text(
-                          "Clock In • 09:41:36",
-                          style: TextStyle(
+                        Text(
+                          "$clockLabel • $_currentTime",
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -116,9 +167,11 @@ class MainView extends StatelessWidget {
                                   Icons.arrow_circle_right_outlined,
                                   size: 18,
                                 ),
-                                label: const Text(
-                                  "CHECK IN",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                label: Text(
+                                  buttonLabel,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: accentGreen,
