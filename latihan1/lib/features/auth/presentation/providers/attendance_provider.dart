@@ -5,7 +5,7 @@ import 'package:latihan1/core/di/service_locator.dart';
 import 'package:latihan1/core/services/camera_service.dart';
 import 'package:latihan1/features/auth/presentation/providers/auth_provider.dart';
 
-class AttendanceSelfieProvider extends ChangeNotifier {
+class AttendanceProvider extends ChangeNotifier {
   final CameraService _cameraService = CameraService();
 
   bool _isCameraReady = false;

@@ -16,17 +16,30 @@ class CameraService {
         orElse: () => _cameras!.first,
       );
 
-      // Gunakan resolusi LOW dan yuv420 untuk stabilitas maksimal
       _controller = CameraController(
         frontCamera,
-        ResolutionPreset.low,
+        ResolutionPreset.medium, // Naikkan ke medium agar gambar lebih detail
         enableAudio: false,
         imageFormatGroup: ImageFormatGroup.yuv420,
       );
 
       await _controller!.initialize();
 
-      // Inisialisasi Face Detector (hanya sekali)
+      // --- TAMBAHKAN UNTUK BRIGHTNESS ---
+      // Aktifkan Auto Exposure untuk menyesuaikan cahaya otomatis
+      if (_controller!.value.exposureMode == ExposureMode.auto) {
+        await _controller!.setExposureMode(ExposureMode.auto);
+      }
+
+      // Set Exposure Offset ke 0 (Netral) - Jika terlalu gelap, naikkan ke 0.5
+      await _controller!.setExposureOffset(0.0);
+
+      // Jika kamera mendukung fokus otomatis, aktifkan
+      if (_controller!.value.focusMode == FocusMode.auto) {
+        await _controller!.setFocusMode(FocusMode.auto);
+      }
+      // -----------------------------------------
+
       final options = FaceDetectorOptions(
         enableLandmarks: false,
         enableClassification: false,
@@ -42,22 +55,13 @@ class CameraService {
 
   /// Mengambil foto dan mendeteksi wajah di dalamnya
   Future<File> takePictureAndDetectFace() async {
-    if (_controller == null || !_controller!.value.isInitialized) {
-      throw Exception('Kamera belum siap.');
-    }
-
-    // Ambil foto
     final XFile xfile = await _controller!.takePicture();
     final File file = File(xfile.path);
-
-    // Deteksi wajah pada foto
     final inputImage = InputImage.fromFilePath(file.path);
     final faces = await _faceDetector!.processImage(inputImage);
-
     if (faces.isEmpty) {
       throw Exception('Tidak ada wajah terdeteksi. Silakan ulangi.');
     }
-
     return file;
   }
 

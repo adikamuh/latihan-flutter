@@ -1,6 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:latihan1/features/auth/presentation/providers/attendance_selfie_provider.dart';
+import 'package:latihan1/features/auth/presentation/providers/attendance_provider.dart';
 import 'package:provider/provider.dart';
 
 class AttendanceSelfieView extends StatefulWidget {
@@ -29,7 +29,7 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
 
   Future<void> _handleCapture(
     BuildContext context,
-    AttendanceSelfieProvider provider,
+    AttendanceProvider provider,
   ) async {
     try {
       await provider.captureAndSubmitAttendance(
@@ -55,8 +55,8 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => AttendanceSelfieProvider(),
-      child: Consumer<AttendanceSelfieProvider>(
+      create: (_) => AttendanceProvider(),
+      child: Consumer<AttendanceProvider>(
         builder: (context, provider, child) {
           if (!provider.isCameraReady && provider.errorMessage.isEmpty) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -87,76 +87,67 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
             body: Stack(
               fit: StackFit.expand,
               children: [
-                // Kamera preview (tanpa stream)
-                if (provider.errorMessage.isNotEmpty)
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.error_outline,
-                            color: Colors.white,
-                            size: 64,
-                          ),
-                          const SizedBox(height: 20),
-                          Text(
-                            provider.errorMessage,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          ElevatedButton(
-                            onPressed: () => Navigator.pop(context),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.black,
-                            ),
-                            child: const Text("Kembali"),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                else if (!provider.isCameraReady)
-                  const Center(
-                    child: CircularProgressIndicator(color: Colors.white),
-                  )
-                else
-                  Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      // Tambahkan UniqueKey untuk mencegah masalah EglImage
-                      CameraPreview(
-                        provider.cameraController!,
-                        key: UniqueKey(),
-                      ),
-                      // Oval sebagai panduan (tanpa real-time face detection)
-                      CustomPaint(painter: OvalPainter()),
-                      const Positioned(
-                        top: 280,
-                        child: Text(
-                          "Position your face within the frame.",
-                          style: TextStyle(color: Colors.white70),
+                // 1. Kamera Preview: Mengisi Seluruh Layar dengan FittedBox
+                Positioned.fill(
+                  child: Container(
+                    color: Colors.black.withValues(alpha: 0.15),
+                    child: FittedBox(
+                      fit: BoxFit
+                          .cover, // Memastikan kamera memenuhi layar tanpa distorsi
+                      child: SizedBox(
+                        width:
+                            provider.cameraController!.value.previewSize!.width,
+                        height: provider
+                            .cameraController!
+                            .value
+                            .previewSize!
+                            .height,
+                        child: CameraPreview(
+                          provider.cameraController!,
+                          key: UniqueKey(),
                         ),
                       ),
-                    ],
+                    ),
                   ),
+                ),
 
-                // Footer (Alamat & Tombol)
+                // 2. Oval Overlay di Tengah Layar (Mengikuti Ukuran Layar, bukan kamera)
+                Center(
+                  child: CustomPaint(
+                    painter: OvalPainter(),
+                    size: Size(
+                      MediaQuery.of(context).size.width *
+                          0.8, // 80% lebar layar
+                      MediaQuery.of(context).size.height *
+                          0.4, // 40% tinggi layar
+                    ),
+                  ),
+                ),
+
+                // 3. Teks Panduan
+                Positioned(
+                  top: MediaQuery.of(context).size.height * 0.45,
+                  left: 0,
+                  right: 0,
+                  child: const Center(
+                    child: Text(
+                      "Position your face within the frame.",
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                  ),
+                ),
+
+                // 4. FOOTER (ALAMAT & TOMBOL)
                 Positioned(
                   bottom: 0,
                   left: 0,
                   right: 0,
                   child: SafeArea(
                     child: Container(
+                      color: const Color(0xFF113355).withValues(alpha: 0.95),
                       padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-                      color: const Color(0xFF113355).withValues(alpha: 0.9),
                       child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
@@ -227,6 +218,7 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
                               ),
                             ),
                           ),
+                          const SizedBox(height: 10),
                         ],
                       ),
                     ),
@@ -250,16 +242,12 @@ class OvalPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
-    final center = Offset(size.width / 2, size.height / 2);
-    final radiusX = size.width * 0.35;
-    final radiusY = size.height * 0.35;
-
+    // Menggambar oval menggunakan ukuran size yang dikirim dari CustomPaint
+    final rect = Rect.fromLTRB(0, 0, size.width, size.height);
     final path = Path();
-    path.addOval(
-      Rect.fromCenter(center: center, width: radiusX * 2, height: radiusY * 2),
-    );
+    path.addOval(rect);
 
-    final dashWidth = 6.0;
+    final dashWidth = 8.0;
     final dashSpace = 6.0;
     final distance = path.computeMetrics().first.length;
 
