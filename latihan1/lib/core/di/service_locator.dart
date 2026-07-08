@@ -14,6 +14,7 @@ import 'package:latihan1/features/auth/domain/usecases/get_tenant.dart';
 import 'package:latihan1/features/auth/domain/usecases/login_usecase.dart';
 import 'package:latihan1/features/auth/domain/usecases/save_tenant.dart';
 import 'package:latihan1/features/auth/domain/usecases/tenant_usecase.dart';
+import 'package:latihan1/features/auth/presentation/providers/attendance_selfie_provider.dart';
 import 'package:latihan1/features/auth/presentation/providers/auth_provider.dart';
 import 'package:latihan1/features/auth/presentation/providers/splash_provider.dart';
 import 'package:latihan1/features/auth/presentation/providers/tenant_provider.dart';
@@ -64,5 +65,8 @@ Future<void> initDependecies() async {
       getTenantUsecase: sl(),
       authRepository: sl(),
     ),
+  );
+  sl.registerLazySingleton<AttendanceSelfieProvider>(
+    () => AttendanceSelfieProvider(),
   );
 }

@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
+// ignore: implementation_imports
 import 'package:flutter/material.dart';
 import 'package:latihan1/core/constants/app_const.dart';
 import 'package:latihan1/core/services/app_log.dart';
@@ -106,5 +108,15 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> attendance({required bool isCheckIn}) async {}
+  Future<void> attendance({
+    required bool isCheckIn,
+    required double latitude,
+    required double longitude,
+    required File imageFile, // Tipe File
+  }) async {
+    setLoading(true);
+    try {} finally {
+      setLoading(false);
+    }
+  }
 }

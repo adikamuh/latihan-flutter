@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:latihan1/features/auth/presentation/views/attendance_selfie_view.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart';
 import 'package:latihan1/features/auth/domain/entities/login_entity.dart';
-import 'package:latihan1/features/auth/presentation/providers/auth_provider.dart';
-import 'package:provider/provider.dart';
 
 class AttendanceLocationView extends StatefulWidget {
   final LoginEntity userData;
@@ -103,15 +102,20 @@ class _AttendanceLocationViewState extends State<AttendanceLocationView> {
   Future<void> _performAttendance() async {
     if (_isMockLocation || _currentPosition == null) return;
 
-    // Ambil AuthProvider dari Provider di atas widget tree
-    final authProvider = context.read<AuthProvider>();
+    final String locationAddress =
+        "Sudirman Central Business District, Jakarta";
 
-    // Panggil fungsi absensi yang sudah ditambahkan sebelumnya di AuthProvider
-    await authProvider.attendance(isCheckIn: widget.isCheckIn);
-
-    if (mounted) {
-      Navigator.pop(context); // Kembali ke MainView setelah berhasil
-    }
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AttendanceSelfieView(
+          isCheckIn: widget.isCheckIn,
+          latitude: _currentPosition!.latitude,
+          longitude: _currentPosition!.longitude,
+          locationAddress: locationAddress,
+        ),
+      ),
+    );
   }
 
   @override

@@ -26,6 +26,8 @@
     <string>$(FLUTTER_BUILD_NUMBER)</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
+    <key>NSCameraUsageDescription</key>
+    <string>Kami memerlukan akses kamera untuk verifikasi wajah absensi.</string>
     <key>UIApplicationSceneManifest</key>
     <dict>
       <key>UIApplicationSupportsMultipleScenes</key>

@@ -29,6 +29,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   cached_network_image: ^3.4.1
+  camera: ^0.10.6
   device_info_plus: ^13.2.0
   dio: ^5.9.2
   encrypt: ^5.0.3
@@ -40,6 +41,7 @@ dependencies:
   flutter_typeahead: ^6.0.0
   geolocator: ^14.0.2
   get_it: ^9.2.1
+  google_mlkit_face_detection: ^0.14.0
   image_picker: ^1.1.2
   isar_community: ^3.3.2
   isar_community_flutter_libs: ^3.3.2
