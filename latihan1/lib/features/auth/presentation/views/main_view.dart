@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:latihan1/core/di/service_locator.dart';
 import 'package:latihan1/features/auth/presentation/providers/auth_provider.dart';
+import 'package:latihan1/features/auth/presentation/views/attendance_location_view.dart';
 import 'package:provider/provider.dart';
 
 class MainView extends StatefulWidget {
@@ -162,7 +163,22 @@ class _MainViewState extends State<MainView> {
                             // Tombol Hijau Check In
                             Expanded(
                               child: ElevatedButton.icon(
-                                onPressed: () {},
+                                onPressed: () async {
+                                  if (userData == null) return;
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AttendanceLocationView(
+                                        userData: userData,
+                                        companyName: companyName,
+                                        photoUrl:
+                                            photoUrl ??
+                                            'http://sumihai.ddns.net:13080/logo',
+                                        isCheckIn: isCheckedIn,
+                                      ),
+                                    ),
+                                  );
+                                },
                                 icon: const Icon(
                                   Icons.arrow_circle_right_outlined,
                                   size: 18,
