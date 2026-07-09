@@ -1,6 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
-import 'package:dio/dio.dart';
+// ignore: implementation_imports
 import 'package:flutter/material.dart';
 import 'package:latihan1/core/constants/app_const.dart';
 import 'package:latihan1/core/services/app_log.dart';
@@ -56,7 +57,7 @@ class AuthProvider extends ChangeNotifier {
     setLoading(true);
     try {
       final deviceInfo = await DeviceInfoService().getDeviceInfo();
-      final tenantCode = await getTenantUsecase.call(null);
+      final tenantCode = await getTenantUsecase.call(null, false);
       if (tenantCode == null || (tenantCode.code?.isEmpty ?? true)) {
         setErrorMessage('Tenant code not found');
         return;
@@ -80,9 +81,6 @@ class AuthProvider extends ChangeNotifier {
           navigatorKey.currentContext!,
         ).pushReplacement(MaterialPageRoute(builder: (context) => MainView()));
       }
-    } on DioException catch (e, s) {
-      AppLog.instance.logError('Login failed with DioException', e, s);
-      setErrorMessage('Login failed: ${e.message}');
     } catch (e, s) {
       AppLog.instance.logError('Login failed', e, s);
       setErrorMessage('Login failed: ${e.toString()}');
@@ -123,6 +121,18 @@ class AuthProvider extends ChangeNotifier {
     } on Exception catch (e, s) {
       AppLog.instance.logError('Logout failed', e, s);
     } finally {
+      setLoading(false);
+    }
+  }
+
+  Future<void> attendance({
+    required bool isCheckIn,
+    required double latitude,
+    required double longitude,
+    required File imageFile, // Tipe File
+  }) async {
+    setLoading(true);
+    try {} finally {
       setLoading(false);
     }
   }

@@ -38,10 +38,10 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<TenantEntity?> getTenant(String? code) async {
+  Future<TenantEntity?> getTenant(String? code, bool forceRequest) async {
     final localTenant = await _localDatasource.getTenant();
 
-    if (localTenant != null) {
+    if (localTenant != null && !forceRequest) {
       return localTenant;
     }
 

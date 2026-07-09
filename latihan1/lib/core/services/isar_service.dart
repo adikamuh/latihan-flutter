@@ -1,6 +1,7 @@
 import 'package:isar_community/isar.dart';
 import 'package:latihan1/features/auth/data/models/tenant_entity_isar.dart';
 import 'package:latihan1/features/auth/data/models/auth_entity_isar.dart';
+// ignore: depend_on_referenced_packages
 import 'package:path_provider/path_provider.dart';
 
 class IsarService {

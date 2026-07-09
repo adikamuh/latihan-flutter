@@ -28,7 +28,7 @@ class TenantProvider extends ChangeNotifier {
 
   void _setLogoUrl(String? url) async {
     if (url == null || url.isEmpty) {
-      final tenantCode = await getTenant.call(null);
+      final tenantCode = await getTenant.call(null, false);
       logoUrl = tenantCode?.logo!;
     } else {
       logoUrl = url;
@@ -54,7 +54,7 @@ class TenantProvider extends ChangeNotifier {
     _setCompanyData(null);
 
     try {
-      final result = await getTenant.call(code);
+      final result = await getTenant.call(code, true);
 
       if (result != null) {
         _setLogoUrl(result.logo ?? '');

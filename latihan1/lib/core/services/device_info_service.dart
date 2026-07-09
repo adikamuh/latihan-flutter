@@ -9,9 +9,8 @@ class DeviceInfoService {
       if (kIsWeb) {
         WebBrowserInfo webInfo = await _deviceInfo.webBrowserInfo;
         return {
-          'deviceId': webInfo.vendor ?? '',
-          'platform':
-              'Web | ${webInfo.userAgent ?? ''} | ${webInfo.vendor ?? ''}',
+          'deviceId': 'Unknown',
+          'platform': '${webInfo.vendor ?? ''} ${webInfo.userAgent ?? ''}',
         };
       } else if (TargetPlatform.android == defaultTargetPlatform) {
         // Jika Android
@@ -19,7 +18,7 @@ class DeviceInfoService {
         return {
           'deviceId': androidInfo.id,
           'platform':
-              'Android | ${androidInfo.version.release} | ${androidInfo.model} | ${androidInfo.manufacturer}',
+              '${androidInfo.isPhysicalDevice ? 'Android' : 'Android Emulator'} ${androidInfo.version.release} | ${androidInfo.manufacturer} ${androidInfo.brand} ${androidInfo.model}',
         };
       } else if (TargetPlatform.iOS == defaultTargetPlatform) {
         // Jika iOS
@@ -27,7 +26,7 @@ class DeviceInfoService {
         return {
           'deviceId': iosInfo.identifierForVendor,
           'platform':
-              'iOS | ${iosInfo.systemVersion} | ${iosInfo.model} | ${iosInfo.systemName}',
+              '${iosInfo.isPhysicalDevice ? 'iOS' : 'iOS Simulator'} ${iosInfo.systemVersion} | ${iosInfo.name} ${iosInfo.model} ${iosInfo.systemName}',
         };
       } else {
         return {'deviceId': 'Unknown', 'platform': 'Unknown'};

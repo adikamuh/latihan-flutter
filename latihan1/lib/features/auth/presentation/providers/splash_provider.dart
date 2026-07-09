@@ -17,7 +17,7 @@ class SplashProvider extends ChangeNotifier {
 
   Future<void> checkTenant(String? code) async {
     try {
-      final tenant = await getTenantUsecase.call(code);
+      final tenant = await getTenantUsecase.call(code, false);
       if (tenant != null) {
         final auth = await checkAuthUsecase.call();
         if (auth != null) {
