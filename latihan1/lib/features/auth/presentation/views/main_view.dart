@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:latihan1/core/di/service_locator.dart';
 import 'package:latihan1/features/auth/presentation/providers/auth_provider.dart';
-import 'package:latihan1/features/auth/presentation/views/attendance_location_view.dart';
+import 'package:latihan1/features/attendance/presentation/views/attendance_location_view.dart';
 import 'package:provider/provider.dart';
 
 class MainView extends StatefulWidget {
