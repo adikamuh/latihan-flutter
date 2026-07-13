@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:intl/intl.dart';
+import 'package:latihan1/core/di/service_locator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:latihan1/features/auth/domain/entities/login_entity.dart';
-import 'package:latihan1/features/attendance/presentation/providers/attendance_provider.dart';
+import 'package:latihan1/features/attendance/presentation/providers/attendance_location_provider.dart';
 import 'package:latihan1/features/attendance/presentation/views/attendance_selfie_view.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +28,8 @@ class AttendanceLocationView extends StatefulWidget {
 
 class _AttendanceLocationViewState extends State<AttendanceLocationView> {
   final MapController _mapController = MapController();
-  final AttendanceProvider _attendanceProvider = AttendanceProvider();
+  final AttendanceLocationProvider _attendanceLocationProvider =
+      AttendanceLocationProvider(getReverseGeoapify: sl());
   String? _todayDate;
 
   @override
@@ -36,7 +38,7 @@ class _AttendanceLocationViewState extends State<AttendanceLocationView> {
     _todayDate = DateFormat('EEEE, d MMMM yyyy').format(DateTime.now());
     // Mulai ambil GPS saat halaman dibuka
     // ignore: body_might_complete_normally_catch_error
-    _attendanceProvider.getLocation().catchError((e) {
+    _attendanceLocationProvider.getLocation().catchError((e) {
       // Error sudah ditangani oleh provider dan UI akan merespons
     });
   }
@@ -50,8 +52,8 @@ class _AttendanceLocationViewState extends State<AttendanceLocationView> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
-      value: _attendanceProvider,
-      child: Consumer<AttendanceProvider>(
+      value: _attendanceLocationProvider,
+      child: Consumer<AttendanceLocationProvider>(
         builder: (context, provider, child) {
           final isLoading = provider.isLocationLoading;
           final errorMsg = provider.locationError;
@@ -243,7 +245,6 @@ class _AttendanceLocationViewState extends State<AttendanceLocationView> {
                                                 longitude: position.longitude,
                                                 locationAddress:
                                                     'Sudirman Central Business District, Jakarta', // atau dari geocoding
-                                                provider: provider,
                                                 userData: widget.userData,
                                                 companyName: widget.companyName,
                                                 photoUrl: widget.photoUrl,

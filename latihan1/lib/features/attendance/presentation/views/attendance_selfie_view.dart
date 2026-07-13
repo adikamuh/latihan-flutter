@@ -1,7 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:latihan1/features/auth/domain/entities/login_entity.dart';
-import 'package:latihan1/features/attendance/presentation/providers/attendance_provider.dart';
+import 'package:latihan1/features/attendance/presentation/providers/attendance_selfie_provider.dart';
 import 'package:latihan1/features/attendance/presentation/views/attendance_confirm_view.dart';
 import 'package:provider/provider.dart';
 
@@ -10,7 +10,6 @@ class AttendanceSelfieView extends StatefulWidget {
   final double latitude;
   final double longitude;
   final String locationAddress;
-  final AttendanceProvider provider; // Terima provider dari parent
   final LoginEntity userData;
   final String companyName;
   final String photoUrl;
@@ -21,7 +20,6 @@ class AttendanceSelfieView extends StatefulWidget {
     required this.latitude,
     required this.longitude,
     required this.locationAddress,
-    required this.provider,
     required this.userData,
     required this.companyName,
     required this.photoUrl,
@@ -39,7 +37,7 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
 
   Future<void> _handleCapture(
     BuildContext context,
-    AttendanceProvider provider,
+    AttendanceSelfieProvider provider,
   ) async {
     try {
       await provider.takePictureOnly();
@@ -54,7 +52,6 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
               companyName: widget.companyName,
               photoUrl: widget.photoUrl,
               isCheckIn: widget.isCheckIn,
-              provider: provider, // <--- WAJIB DITERUSKAN
             ),
           ),
         );
@@ -71,9 +68,9 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-      value: widget.provider,
-      child: Consumer<AttendanceProvider>(
+    return ChangeNotifierProvider<AttendanceSelfieProvider>(
+      create: (_) => AttendanceSelfieProvider(),
+      child: Consumer<AttendanceSelfieProvider>(
         builder: (context, provider, child) {
           // Inisialisasi kamera jika belum siap
           if (!provider.isCameraReady && provider.errorMessage.isEmpty) {

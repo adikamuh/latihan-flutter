@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:latihan1/core/services/device_info_service.dart';
+import 'package:latihan1/features/attendance/presentation/providers/attendance_confirm_provider.dart';
 import 'package:latihan1/features/auth/domain/entities/login_entity.dart';
-import 'package:latihan1/features/attendance/presentation/providers/attendance_provider.dart';
 import 'package:provider/provider.dart';
 
 class AttendanceConfirmationView extends StatefulWidget {
@@ -10,7 +9,6 @@ class AttendanceConfirmationView extends StatefulWidget {
   final String companyName;
   final String photoUrl;
   final bool isCheckIn;
-  final AttendanceProvider provider; // <--- WAJIB DITERIMA
 
   const AttendanceConfirmationView({
     super.key,
@@ -18,7 +16,6 @@ class AttendanceConfirmationView extends StatefulWidget {
     required this.companyName,
     required this.photoUrl,
     required this.isCheckIn,
-    required this.provider,
   });
 
   @override
@@ -28,94 +25,12 @@ class AttendanceConfirmationView extends StatefulWidget {
 
 class _AttendanceConfirmationViewState
     extends State<AttendanceConfirmationView> {
-  Future<void> _submitAttendance(
-    BuildContext context,
-    AttendanceProvider provider,
-  ) async {
-    if (provider.capturedImageFile == null) return;
-
-    final deviceInfo = await DeviceInfoService().getDeviceInfo();
-    final String deviceId = (deviceInfo['deviceId'] as String?) ?? 'unknown';
-
-    try {
-      await provider.submitAttendance(
-        isCheckIn: widget.isCheckIn,
-        deviceId: deviceId,
-        userId: widget.userData.uid ?? 0,
-        employeeId: widget.userData.eid ?? 0,
-      );
-
-      if (mounted) {
-        // ignore: use_build_context_synchronously
-        _showSuccessDialog(context);
-      }
-    } catch (e) {
-      if (mounted) {
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal: $e'), backgroundColor: Colors.red),
-        );
-      }
-    }
-  }
-
-  void _showSuccessDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFEBF9EC),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.check_circle,
-                    color: Color(0xFF4CAF50),
-                    size: 40,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  "Check-in successful.",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  "Don't forget to check out.",
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        // ignore: use_build_context_synchronously
-        Navigator.of(context).popUntil((route) => route.isFirst);
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    // BUNGKUS dengan ChangeNotifierProvider.value agar provider tersedia di bawahnya
-    return ChangeNotifierProvider.value(
-      value: widget.provider,
-      child: Consumer<AttendanceProvider>(
+    // BUNGKUS dengan ChangeNotifierProvider agar provider tersedia di bawahnya
+    return ChangeNotifierProvider(
+      create: (_) => AttendanceConfirmProvider(),
+      child: Consumer<AttendanceConfirmProvider>(
         builder: (context, provider, child) {
           final String clockLabel = widget.isCheckIn ? 'Check In' : 'Check Out';
 
@@ -221,11 +136,15 @@ class _AttendanceConfirmationViewState
                                     borderRadius: const BorderRadius.vertical(
                                       top: Radius.circular(24),
                                     ),
-                                    child: Image.file(
-                                      provider.capturedImageFile!,
+                                    child: Container(
                                       width: double.infinity,
                                       height: 200,
-                                      fit: BoxFit.cover,
+                                      color: Colors.grey[200],
+                                      child: const Icon(
+                                        Icons.photo,
+                                        size: 64,
+                                        color: Colors.grey,
+                                      ),
                                     ),
                                   ),
                                   Positioned.fill(
@@ -249,14 +168,16 @@ class _AttendanceConfirmationViewState
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          "Lat : ${provider.currentPosition!.latitude}",
+                                          // ignore: dead_code
+                                          "Lat : ${provider.currentPosition?.latitude ?? 'Unknown'}",
                                           style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 12,
                                           ),
                                         ),
                                         Text(
-                                          "Long: ${provider.currentPosition!.longitude}",
+                                          // ignore: dead_code
+                                          "Long: ${provider.currentPosition?.longitude ?? 'Unknown'}",
                                           style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 12,
@@ -375,12 +296,8 @@ class _AttendanceConfirmationViewState
                     width: double.infinity,
                     height: 55,
                     child: ElevatedButton.icon(
-                      onPressed:
-                          provider.isLoading ||
-                              provider.capturedImageFile == null
-                          ? null
-                          : () => _submitAttendance(context, provider),
-                      icon: provider.isLoading
+                      onPressed: null,
+                      icon: provider.isLoading ?? false
                           ? const SizedBox(
                               width: 20,
                               height: 20,
@@ -391,7 +308,7 @@ class _AttendanceConfirmationViewState
                             )
                           : const Icon(Icons.camera_alt_outlined),
                       label: Text(
-                        provider.isLoading
+                        provider.isLoading ?? false
                             ? 'SENDING...'
                             : '${clockLabel.toUpperCase()} NOW',
                         style: const TextStyle(
