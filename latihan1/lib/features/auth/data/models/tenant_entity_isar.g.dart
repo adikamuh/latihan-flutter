@@ -17,10 +17,11 @@ const TenantEntityIsarSchema = CollectionSchema(
   name: r'TenantEntityIsar',
   id: -460849723902842468,
   properties: {
-    r'code': PropertySchema(id: 0, name: r'code', type: IsarType.string),
-    r'id': PropertySchema(id: 1, name: r'id', type: IsarType.long),
-    r'logo': PropertySchema(id: 2, name: r'logo', type: IsarType.string),
-    r'name': PropertySchema(id: 3, name: r'name', type: IsarType.string),
+    r'address': PropertySchema(id: 0, name: r'address', type: IsarType.string),
+    r'code': PropertySchema(id: 1, name: r'code', type: IsarType.string),
+    r'id': PropertySchema(id: 2, name: r'id', type: IsarType.long),
+    r'logo': PropertySchema(id: 3, name: r'logo', type: IsarType.string),
+    r'name': PropertySchema(id: 4, name: r'name', type: IsarType.string),
   },
 
   estimateSize: _tenantEntityIsarEstimateSize,
@@ -44,6 +45,12 @@ int _tenantEntityIsarEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  {
+    final value = object.address;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   {
     final value = object.code;
     if (value != null) {
@@ -71,10 +78,11 @@ void _tenantEntityIsarSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.code);
-  writer.writeLong(offsets[1], object.id);
-  writer.writeString(offsets[2], object.logo);
-  writer.writeString(offsets[3], object.name);
+  writer.writeString(offsets[0], object.address);
+  writer.writeString(offsets[1], object.code);
+  writer.writeLong(offsets[2], object.id);
+  writer.writeString(offsets[3], object.logo);
+  writer.writeString(offsets[4], object.name);
 }
 
 TenantEntityIsar _tenantEntityIsarDeserialize(
@@ -84,11 +92,12 @@ TenantEntityIsar _tenantEntityIsarDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = TenantEntityIsar(
-    code: reader.readStringOrNull(offsets[0]),
-    id: reader.readLongOrNull(offsets[1]),
+    address: reader.readStringOrNull(offsets[0]),
+    code: reader.readStringOrNull(offsets[1]),
+    id: reader.readLongOrNull(offsets[2]),
     idIsar: id,
-    logo: reader.readStringOrNull(offsets[2]),
-    name: reader.readStringOrNull(offsets[3]),
+    logo: reader.readStringOrNull(offsets[3]),
+    name: reader.readStringOrNull(offsets[4]),
   );
   return object;
 }
@@ -103,10 +112,12 @@ P _tenantEntityIsarDeserializeProp<P>(
     case 0:
       return (reader.readStringOrNull(offset)) as P;
     case 1:
-      return (reader.readLongOrNull(offset)) as P;
-    case 2:
       return (reader.readStringOrNull(offset)) as P;
+    case 2:
+      return (reader.readLongOrNull(offset)) as P;
     case 3:
+      return (reader.readStringOrNull(offset)) as P;
+    case 4:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -210,6 +221,165 @@ extension TenantEntityIsarQueryWhere
 
 extension TenantEntityIsarQueryFilter
     on QueryBuilder<TenantEntityIsar, TenantEntityIsar, QFilterCondition> {
+  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
+  addressIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'address'),
+      );
+    });
+  }
+
+  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
+  addressIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'address'),
+      );
+    });
+  }
+
+  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
+  addressEqualTo(String? value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'address',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
+  addressGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'address',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
+  addressLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'address',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
+  addressBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'address',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
+  addressStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'address',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
+  addressEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'address',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
+  addressContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'address',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
+  addressMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'address',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
+  addressIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'address', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
+  addressIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'address', value: ''),
+      );
+    });
+  }
+
   QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterFilterCondition>
   codeIsNull() {
     return QueryBuilder.apply(this, (query) {
@@ -824,6 +994,20 @@ extension TenantEntityIsarQueryLinks
 
 extension TenantEntityIsarQuerySortBy
     on QueryBuilder<TenantEntityIsar, TenantEntityIsar, QSortBy> {
+  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterSortBy>
+  sortByAddress() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'address', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterSortBy>
+  sortByAddressDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'address', Sort.desc);
+    });
+  }
+
   QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterSortBy> sortByCode() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'code', Sort.asc);
@@ -879,6 +1063,20 @@ extension TenantEntityIsarQuerySortBy
 
 extension TenantEntityIsarQuerySortThenBy
     on QueryBuilder<TenantEntityIsar, TenantEntityIsar, QSortThenBy> {
+  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterSortBy>
+  thenByAddress() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'address', Sort.asc);
+    });
+  }
+
+  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterSortBy>
+  thenByAddressDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'address', Sort.desc);
+    });
+  }
+
   QueryBuilder<TenantEntityIsar, TenantEntityIsar, QAfterSortBy> thenByCode() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'code', Sort.asc);
@@ -948,6 +1146,13 @@ extension TenantEntityIsarQuerySortThenBy
 
 extension TenantEntityIsarQueryWhereDistinct
     on QueryBuilder<TenantEntityIsar, TenantEntityIsar, QDistinct> {
+  QueryBuilder<TenantEntityIsar, TenantEntityIsar, QDistinct>
+  distinctByAddress({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'address', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<TenantEntityIsar, TenantEntityIsar, QDistinct> distinctByCode({
     bool caseSensitive = true,
   }) {
@@ -984,6 +1189,12 @@ extension TenantEntityIsarQueryProperty
   QueryBuilder<TenantEntityIsar, int, QQueryOperations> idIsarProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'idIsar');
+    });
+  }
+
+  QueryBuilder<TenantEntityIsar, String?, QQueryOperations> addressProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'address');
     });
   }
 

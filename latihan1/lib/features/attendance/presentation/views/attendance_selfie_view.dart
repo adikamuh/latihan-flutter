@@ -39,6 +39,15 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
     BuildContext context,
     AttendanceSelfieProvider provider,
   ) async {
+    if (!provider.faceDetected) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Posisikan wajah Anda di dalam lingkaran'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
     try {
       await provider.takePictureOnly();
 
@@ -163,7 +172,10 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
                 // --- OVAL OVERLAY ---
                 Center(
                   child: CustomPaint(
-                    painter: OvalPainter(),
+                    painter: OvalPainter(
+                      isFaceDetected:
+                          provider.faceDetected, // Kirim status deteksi
+                    ),
                     size: Size(
                       MediaQuery.of(context).size.width * 0.8,
                       MediaQuery.of(context).size.height * 0.4,
@@ -236,14 +248,18 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
                           const SizedBox(height: 20),
                           Center(
                             child: GestureDetector(
-                              onTap: provider.isLoading
+                              onTap:
+                                  (provider.isLoading || !provider.faceDetected)
                                   ? null
                                   : () => _handleCapture(context, provider),
                               child: Container(
                                 width: 70,
                                 height: 70,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFFA1D645),
+                                decoration: BoxDecoration(
+                                  color: provider.faceDetected
+                                      ? const Color(0xFFA1D645)
+                                      : Colors
+                                            .grey, // Hijau jika wajah terdeteksi
                                   shape: BoxShape.circle,
                                 ),
                                 child: Center(
@@ -282,33 +298,45 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
 
 // OvalPainter (tidak berubah)
 class OvalPainter extends CustomPainter {
+  final bool isFaceDetected;
+  OvalPainter({this.isFaceDetected = false});
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white
+      ..color = isFaceDetected
+          ? Colors.green
+          : Colors
+                .white // Hijau jika terdeteksi
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
+      ..strokeWidth = isFaceDetected ? 4.0 : 2.0;
 
     final rect = Rect.fromLTRB(0, 0, size.width, size.height);
     final path = Path();
     path.addOval(rect);
 
-    final dashWidth = 8.0;
-    final dashSpace = 6.0;
-    final distance = path.computeMetrics().first.length;
-
-    double currentDistance = 0;
-    while (currentDistance < distance) {
-      final start = currentDistance;
-      final end = currentDistance + dashWidth;
-      final pathSegment = path.extractPath(start, end);
-      canvas.drawPath(pathSegment, paint);
-      currentDistance += dashWidth + dashSpace;
+    if (isFaceDetected) {
+      // Garis penuh jika wajah terdeteksi
+      canvas.drawPath(path, paint);
+    } else {
+      // Garis putus-putus jika belum
+      final dashWidth = 8.0;
+      final dashSpace = 6.0;
+      final distance = path.computeMetrics().first.length;
+      double currentDistance = 0;
+      while (currentDistance < distance) {
+        final start = currentDistance;
+        final end = currentDistance + dashWidth;
+        final pathSegment = path.extractPath(start, end);
+        canvas.drawPath(pathSegment, paint);
+        currentDistance += dashWidth + dashSpace;
+      }
     }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant OvalPainter oldDelegate) =>
+      oldDelegate.isFaceDetected != isFaceDetected;
 }
 
 extension on Path {

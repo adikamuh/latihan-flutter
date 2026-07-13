@@ -36,9 +36,9 @@ class LoginEntity {
   factory LoginEntity.fromJson(Map<String, dynamic> json) {
     return LoginEntity(
       uid: json['uid'] as int?,
-      uname: json['uname'] as String?,
+      uname: json['user_name'] as String?,
       eid: json['eid'] as int?,
-      ename: json['ename'] as String?,
+      ename: json['employee_name'] as String?,
       pid: json['pid'] as int?,
       currentCompany: json['current_company'] as int?,
       allowedCompanies: json['allowed_companies'] as List<dynamic>?,
@@ -87,6 +87,20 @@ class LoginEntity {
       return company != null ? company['name'] as String : "-";
     } catch (e) {
       return "-";
+    }
+  }
+
+  String getName() {
+    try {
+      if (ename != null) {
+        return ename!;
+      } else if (uname != null) {
+        return uname!;
+      } else {
+        return "User";
+      }
+    } catch (e) {
+      return "User";
     }
   }
 }

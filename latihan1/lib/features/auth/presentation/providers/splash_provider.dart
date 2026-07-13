@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:latihan1/core/services/app_log.dart';
 import 'package:latihan1/features/auth/domain/usecases/check_auth.dart';
 import 'package:latihan1/features/auth/domain/usecases/get_tenant.dart';
-import 'package:latihan1/features/auth/presentation/views/login_view.dart';
-import 'package:latihan1/features/auth/presentation/views/main_view.dart';
 import 'package:latihan1/features/auth/presentation/views/tenant_view.dart';
 import 'package:latihan1/main.dart';
 
@@ -22,11 +20,11 @@ class SplashProvider extends ChangeNotifier {
         final auth = await checkAuthUsecase.call();
         if (auth != null) {
           Navigator.of(navigatorKey.currentContext!).pushReplacement(
-            MaterialPageRoute(builder: (context) => MainView()),
+            MaterialPageRoute(builder: (context) => TenantView()),
           );
         } else {
           Navigator.of(navigatorKey.currentContext!).pushReplacement(
-            MaterialPageRoute(builder: (context) => LoginView()),
+            MaterialPageRoute(builder: (context) => TenantView()),
           );
         }
       } else {

@@ -48,7 +48,7 @@ class _MainViewState extends State<MainView> {
       builder: (context, authProvider, child) {
         final userData = authProvider.loginData;
         final String employeeName =
-            userData?.ename ?? userData?.uname ?? 'Guest User';
+            userData?.getName() ?? 'Guest User';
         final String companyName = userData?.getCompany() ?? '-';
         final String? photoUrl = userData?.photos;
         final String todayDate = DateFormat(

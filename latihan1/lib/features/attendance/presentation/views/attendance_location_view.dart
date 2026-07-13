@@ -12,7 +12,8 @@ class AttendanceLocationView extends StatefulWidget {
   final LoginEntity userData;
   final String companyName;
   final String photoUrl;
-  final bool isCheckIn;
+  final bool
+  isCheckIn; // Parameter ini mungkin tidak lagi digunakan, karena kita pakai attendance_state
 
   const AttendanceLocationView({
     super.key,
@@ -37,10 +38,8 @@ class _AttendanceLocationViewState extends State<AttendanceLocationView> {
     super.initState();
     _todayDate = DateFormat('EEEE, d MMMM yyyy').format(DateTime.now());
     // Mulai ambil GPS saat halaman dibuka
-    // ignore: body_might_complete_normally_catch_error
-    _attendanceLocationProvider.getLocation().catchError((e) {
-      // Error sudah ditangani oleh provider dan UI akan merespons
-    });
+    // Error ditangani oleh provider, tidak perlu menangani di sini
+    _attendanceLocationProvider.getLocation();
   }
 
   @override
@@ -59,8 +58,12 @@ class _AttendanceLocationViewState extends State<AttendanceLocationView> {
           final errorMsg = provider.locationError;
           final isMock = provider.isMockLocation;
           final position = provider.currentPosition;
+          final locationAddress = provider.locationAddress;
 
-          final String clockLabel = widget.isCheckIn ? 'Check In' : 'Check Out';
+          // Tentukan jenis tombol berdasarkan attendance_state dari userData
+          final String? attendanceState = widget.userData.attendanceState;
+          final bool isCheckedIn = attendanceState == 'checked_in';
+          final String buttonLabel = isCheckedIn ? 'CHECK OUT' : 'CHECK IN';
 
           return Scaffold(
             backgroundColor: Colors.white,
@@ -135,88 +138,123 @@ class _AttendanceLocationViewState extends State<AttendanceLocationView> {
                       ),
                     ),
 
-                    // Peta
+                    // Peta dengan ruang yang cukup untuk footer
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20.0,
                           vertical: 16.0,
                         ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(24),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withValues(alpha: 0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(24),
-                            child: isLoading
-                                ? const Center(
-                                    child: CircularProgressIndicator(),
-                                  )
-                                : errorMsg.isNotEmpty
-                                ? Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Text(
-                                        errorMsg,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          color: Colors.red,
-                                        ),
-                                      ),
+                        child: Column(
+                          children: [
+                            // Kartu peta
+                            Expanded(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(24),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withValues(alpha: 0.1),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
                                     ),
-                                  )
-                                : FlutterMap(
-                                    mapController: _mapController,
-                                    options: MapOptions(
-                                      initialCenter: LatLng(
-                                        position!.latitude,
-                                        position.longitude,
-                                      ),
-                                      initialZoom: 18.0,
-                                    ),
-                                    children: [
-                                      TileLayer(
-                                        urlTemplate:
-                                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                        userAgentPackageName:
-                                            'com.example.latihan1',
-                                      ),
-                                      MarkerLayer(
-                                        markers: [
-                                          Marker(
-                                            width: 40.0,
-                                            height: 40.0,
-                                            point: LatLng(
-                                              position.latitude,
-                                              position.longitude,
-                                            ),
-                                            child: const Icon(
-                                              Icons.location_on,
-                                              color: Colors.red,
-                                              size: 40,
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(24),
+                                  child: isLoading
+                                      ? const Center(
+                                          child: CircularProgressIndicator(),
+                                        )
+                                      : errorMsg.isNotEmpty
+                                      ? Center(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(16.0),
+                                            child: Text(
+                                              errorMsg,
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                color: Colors.red,
+                                              ),
                                             ),
                                           ),
-                                        ],
+                                        )
+                                      : FlutterMap(
+                                          mapController: _mapController,
+                                          options: MapOptions(
+                                            initialCenter: LatLng(
+                                              position!.latitude,
+                                              position.longitude,
+                                            ),
+                                            initialZoom: 18.0,
+                                          ),
+                                          children: [
+                                            TileLayer(
+                                              urlTemplate:
+                                                  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                              userAgentPackageName:
+                                                  'com.example.latihan1',
+                                            ),
+                                            MarkerLayer(
+                                              markers: [
+                                                Marker(
+                                                  width: 40.0,
+                                                  height: 40.0,
+                                                  point: LatLng(
+                                                    position.latitude,
+                                                    position.longitude,
+                                                  ),
+                                                  child: const Icon(
+                                                    Icons.location_on,
+                                                    color: Colors.red,
+                                                    size: 40,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                ),
+                              ),
+                            ),
+                            // Tampilkan alamat lokasi di bawah peta
+                            if (locationAddress.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 12.0),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.location_on_outlined,
+                                      size: 16,
+                                      color: Colors.grey[600],
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        locationAddress,
+                                        style: TextStyle(
+                                          color: Colors.grey[700],
+                                          fontSize: 13,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                    ],
-                                  ),
-                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            const SizedBox(height: 20),
+                          ],
                         ),
                       ),
                     ),
+                    // Spacer agar footer tidak tertutup
                     const SizedBox(height: 80),
                   ],
                 ),
 
-                // Footer Tombol
+                // Footer: Hanya satu tombol
                 Positioned(
                   bottom: 0,
                   left: 0,
@@ -224,87 +262,52 @@ class _AttendanceLocationViewState extends State<AttendanceLocationView> {
                   child: SafeArea(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed:
-                                  (errorMsg.isNotEmpty ||
-                                      isMock ||
-                                      position == null ||
-                                      isLoading)
-                                  ? null
-                                  : () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              AttendanceSelfieView(
-                                                isCheckIn: widget.isCheckIn,
-                                                latitude: position.latitude,
-                                                longitude: position.longitude,
-                                                locationAddress:
-                                                    'Sudirman Central Business District, Jakarta', // atau dari geocoding
-                                                userData: widget.userData,
-                                                companyName: widget.companyName,
-                                                photoUrl: widget.photoUrl,
-                                              ),
-                                        ),
-                                      );
-                                    },
-                              icon: const Icon(
-                                Icons.camera_alt_outlined,
-                                size: 20,
-                              ),
-                              label: Text(
-                                clockLabel.toUpperCase(),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFA1D645),
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 18,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                elevation: 0,
-                              ),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 55,
+                        child: ElevatedButton.icon(
+                          onPressed:
+                              (errorMsg.isNotEmpty ||
+                                  isMock ||
+                                  position == null ||
+                                  isLoading)
+                              ? null
+                              : () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AttendanceSelfieView(
+                                        isCheckIn:
+                                            !isCheckedIn, // Kirim status yang diinginkan
+                                        latitude: position.latitude,
+                                        longitude: position.longitude,
+                                        locationAddress: locationAddress.isEmpty
+                                            ? 'Lokasi tidak terdeteksi'
+                                            : locationAddress,
+                                        userData: widget.userData,
+                                        companyName: widget.companyName,
+                                        photoUrl: widget.photoUrl,
+                                      ),
+                                    ),
+                                  );
+                                },
+                          icon: const Icon(Icons.camera_alt_outlined, size: 20),
+                          label: Text(
+                            buttonLabel,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
                             ),
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: null,
-                              icon: const Icon(
-                                Icons.camera_alt_outlined,
-                                size: 20,
-                              ),
-                              label: Text(
-                                widget.isCheckIn ? 'CHECK OUT' : 'CHECK IN',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.grey[300],
-                                foregroundColor: Colors.grey,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 18,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                elevation: 0,
-                              ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFA1D645),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
+                            elevation: 0,
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
