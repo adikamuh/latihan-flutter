@@ -20,7 +20,7 @@ class CameraService {
         frontCamera,
         ResolutionPreset.medium, // Naikkan ke medium agar gambar lebih detail
         enableAudio: false,
-        imageFormatGroup: ImageFormatGroup.yuv420,
+        imageFormatGroup: ImageFormatGroup.nv21,
       );
 
       await _controller!.initialize();

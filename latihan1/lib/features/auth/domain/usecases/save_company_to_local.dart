@@ -7,6 +7,7 @@ class SaveCompanyToLocal {
   SaveCompanyToLocal(this.repository);
 
   Future<void> call(CompanyEntity company) async {
-    await repository.saveCompanyToLocalDB(company);
+    // await repository.saveCompanyToLocalDB(company);
+    
   }
 }

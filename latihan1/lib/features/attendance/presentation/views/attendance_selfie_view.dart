@@ -40,9 +40,9 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
     AttendanceSelfieProvider provider,
   ) async {
     try {
-      await provider.takePictureOnly();
+      final result = await provider.takePictureOnly();
 
-      if (mounted) {
+      if (mounted && result) {
         Navigator.push(
           // ignore: use_build_context_synchronously
           context,
@@ -50,7 +50,7 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
             builder: (context) => AttendanceConfirmationView(
               userData: widget.userData,
               companyName: widget.companyName,
-              photoUrl: widget.photoUrl,
+              photoUrl: provider.capturedImageFile?.path ?? '',
               isCheckIn: widget.isCheckIn,
             ),
           ),
@@ -69,18 +69,9 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<AttendanceSelfieProvider>(
-      create: (_) => AttendanceSelfieProvider(),
+      create: (_) => AttendanceSelfieProvider()..initializeCamera(),
       child: Consumer<AttendanceSelfieProvider>(
         builder: (context, provider, child) {
-          // Inisialisasi kamera jika belum siap
-          if (!provider.isCameraReady && provider.errorMessage.isEmpty) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (context.mounted) {
-                provider.initializeCamera();
-              }
-            });
-          }
-
           final bool isCameraFullyReady =
               provider.cameraController != null &&
               provider.cameraController!.value.isInitialized;
@@ -241,21 +232,20 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
                             child: GestureDetector(
                               onTap: () {
                                 if (provider.isLoading) return;
-                                if (!provider.faceDetected) {
-                                  // Tampilkan peringatan, tapi tetap izinkan pengambilan foto
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        '⚠️ Wajah tidak terdeteksi. Pastikan wajah berada di dalam lingkaran.',
-                                      ),
-                                      backgroundColor: Colors.orange,
-                                    ),
-                                  );
-                                  // Tetap lanjutkan pengambilan foto (opsional, jika ingin tetap memaksa)
-                                  // _handleCapture(context, provider);
-                                } else {
-                                  _handleCapture(context, provider);
-                                }
+                                // if (!provider.faceDetected) {
+                                //   // Tampilkan peringatan, tapi tetap izinkan pengambilan foto
+                                //   ScaffoldMessenger.of(context).showSnackBar(
+                                //     const SnackBar(
+                                //       content: Text(
+                                //         '⚠️ Wajah tidak terdeteksi. Pastikan wajah berada di dalam lingkaran.',
+                                //       ),
+                                //       backgroundColor: Colors.orange,
+                                //     ),
+                                //   );
+                                //   // Tetap lanjutkan pengambilan foto (opsional, jika ingin tetap memaksa)
+                                //   // _handleCapture(context, provider);
+                                // } else {}
+                                _handleCapture(context, provider);
                               },
                               child: Container(
                                 width: 70,

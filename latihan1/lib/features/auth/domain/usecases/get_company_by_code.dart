@@ -7,6 +7,7 @@ class GetCompanyByCode {
   GetCompanyByCode(this.repository);
 
   Future<CompanyEntity?> call(String code) async {
-    return await repository.getCompanyByCode(code);
+    // return await repository.getCompanyByCode(code);
+    return null;
   }
 }
