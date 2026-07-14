@@ -1,23 +1,20 @@
+// attendance_selfie_provider.dart
 import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
+import 'package:latihan1/core/services/app_log.dart';
 import 'package:latihan1/core/services/camera_service.dart';
 
 class AttendanceSelfieProvider extends ChangeNotifier {
   final CameraService _cameraService = CameraService();
 
-  // --- State Kamera ---
   bool _isCameraReady = false;
-  final bool _isLoading = false;
+  bool _isLoading = false;
   String _errorMessage = '';
-
-  // --- State Deteksi Wajah ---
   bool _faceDetected = false;
-  late FaceDetector _faceDetector;
-
-  // --- State Konfirmasi ---
+  FaceDetector? _faceDetector;
   File? _capturedImageFile;
   String? _timestamp;
 
@@ -37,19 +34,16 @@ class AttendanceSelfieProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // --- PERBAIKAN: Implementasi Inisialisasi Kamera ---
+  // --- Inisialisasi Kamera ---
   Future<void> initializeCamera() async {
     try {
       await _cameraService.initCamera();
-      // Inisialisasi Face Detector
       final options = FaceDetectorOptions(
         enableLandmarks: false,
         enableClassification: false,
         enableTracking: false,
       );
       _faceDetector = FaceDetector(options: options);
-
-      // Mulai stream gambar untuk deteksi real-time
       await _cameraService.controller!.startImageStream(_processCameraImage);
       _isCameraReady = true;
       notifyListeners();
@@ -59,40 +53,52 @@ class AttendanceSelfieProvider extends ChangeNotifier {
     }
   }
 
-  // --- Proses setiap frame kamera ---
+  // --- ✅ PERBAIKAN: Gunakan fromCameraImage ---
+  // --- Proses frame menggunakan fromBytes yang sangat stabil ---
   Future<void> _processCameraImage(CameraImage image) async {
-    if (!_isCameraReady) return;
+    if (!_isCameraReady || _faceDetector == null) return;
 
     try {
-      // Konversi CameraImage ke InputImage (format standar ML Kit)
-      final WriteBuffer buffer = WriteBuffer();
+      // 1. Gabungkan semua plane (Y, U, V) ke dalam satu array bytes
+      final WriteBuffer allBytes = WriteBuffer();
       for (final plane in image.planes) {
-        buffer.putUint8List(plane.bytes);
+        allBytes.putUint8List(plane.bytes);
       }
-      final bytes = buffer.done().buffer.asUint8List();
+      final bytes = allBytes.done().buffer.asUint8List();
+
+      // 2. Format standar NV21 untuk Android
       final inputImage = InputImage.fromBytes(
         bytes: bytes,
         metadata: InputImageMetadata(
           size: Size(image.width.toDouble(), image.height.toDouble()),
           rotation: InputImageRotation.rotation0deg,
           format: InputImageFormat.nv21,
+          // Gunakan bytesPerRow dari plane ke-0 (Y)
           bytesPerRow: image.planes[0].bytesPerRow,
         ),
       );
 
-      final faces = await _faceDetector.processImage(inputImage);
+      final faces = await _faceDetector!.processImage(inputImage);
       final bool newState = faces.isNotEmpty;
+
+      // 3. Debugging di terminal VS Code (untuk memastikan deteksi jalan)
+      AppLog.instance.logError(
+        "🚨 Face detection state changed: $newState (faces: ${faces.length})",
+        '',
+        StackTrace.current,
+      );
 
       if (_faceDetected != newState) {
         _faceDetected = newState;
-        notifyListeners(); // Update UI saat status wajah berubah
+        notifyListeners();
       }
-    } catch (e) {
-      // Abaikan error sementara (terkadang frame pertama gagal)
+    } catch (e, s) {
+      // Abaikan error frame pertama (biasanya terjadi di awal inisialisasi)
+      AppLog.instance.logError('⚠️ Frame conversion error: $e', e, s);
     }
   }
 
-  // --- Ambil Foto saja ---
+  // --- Ambil Foto ---
   Future<File> takePictureOnly() async {
     if (_cameraService.controller == null ||
         !_cameraService.controller!.value.isInitialized) {
@@ -104,9 +110,19 @@ class AttendanceSelfieProvider extends ChangeNotifier {
     return file;
   }
 
+  // --- Reset state ---
+  void resetState() {
+    _capturedImageFile = null;
+    _timestamp = null;
+    _faceDetected = false;
+    _isLoading = false;
+    _errorMessage = '';
+    notifyListeners();
+  }
+
   @override
   void dispose() {
-    _faceDetector.close();
+    _faceDetector?.close();
     _cameraService.dispose();
     super.dispose();
   }

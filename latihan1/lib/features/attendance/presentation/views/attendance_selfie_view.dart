@@ -39,15 +39,6 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
     BuildContext context,
     AttendanceSelfieProvider provider,
   ) async {
-    if (!provider.faceDetected) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Posisikan wajah Anda di dalam lingkaran'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
-    }
     try {
       await provider.takePictureOnly();
 
@@ -248,10 +239,24 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
                           const SizedBox(height: 20),
                           Center(
                             child: GestureDetector(
-                              onTap:
-                                  (provider.isLoading || !provider.faceDetected)
-                                  ? null
-                                  : () => _handleCapture(context, provider),
+                              onTap: () {
+                                if (provider.isLoading) return;
+                                if (!provider.faceDetected) {
+                                  // Tampilkan peringatan, tapi tetap izinkan pengambilan foto
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        '⚠️ Wajah tidak terdeteksi. Pastikan wajah berada di dalam lingkaran.',
+                                      ),
+                                      backgroundColor: Colors.orange,
+                                    ),
+                                  );
+                                  // Tetap lanjutkan pengambilan foto (opsional, jika ingin tetap memaksa)
+                                  // _handleCapture(context, provider);
+                                } else {
+                                  _handleCapture(context, provider);
+                                }
+                              },
                               child: Container(
                                 width: 70,
                                 height: 70,

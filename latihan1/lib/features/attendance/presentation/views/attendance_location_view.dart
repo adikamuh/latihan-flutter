@@ -12,8 +12,7 @@ class AttendanceLocationView extends StatefulWidget {
   final LoginEntity userData;
   final String companyName;
   final String photoUrl;
-  final bool
-  isCheckIn; // Parameter ini mungkin tidak lagi digunakan, karena kita pakai attendance_state
+  final bool isCheckIn;
 
   const AttendanceLocationView({
     super.key,
@@ -38,7 +37,6 @@ class _AttendanceLocationViewState extends State<AttendanceLocationView> {
     super.initState();
     _todayDate = DateFormat('EEEE, d MMMM yyyy').format(DateTime.now());
     // Mulai ambil GPS saat halaman dibuka
-    // Error ditangani oleh provider, tidak perlu menangani di sini
     _attendanceLocationProvider.getLocation();
   }
 
@@ -60,7 +58,7 @@ class _AttendanceLocationViewState extends State<AttendanceLocationView> {
           final position = provider.currentPosition;
           final locationAddress = provider.locationAddress;
 
-          // Tentukan jenis tombol berdasarkan attendance_state dari userData
+          // Tentukan tombol berdasarkan attendance_state
           final String? attendanceState = widget.userData.attendanceState;
           final bool isCheckedIn = attendanceState == 'checked_in';
           final String buttonLabel = isCheckedIn ? 'CHECK OUT' : 'CHECK IN';
@@ -71,7 +69,7 @@ class _AttendanceLocationViewState extends State<AttendanceLocationView> {
               children: [
                 Column(
                   children: [
-                    // Header
+                    // 1. HEADER BIRU TUA
                     Container(
                       padding: const EdgeInsets.only(
                         top: 60,
@@ -138,7 +136,7 @@ class _AttendanceLocationViewState extends State<AttendanceLocationView> {
                       ),
                     ),
 
-                    // Peta dengan ruang yang cukup untuk footer
+                    // 2. BAGIAN PETA, ALAMAT & RUANG UNTUK TOMBOL
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -147,7 +145,7 @@ class _AttendanceLocationViewState extends State<AttendanceLocationView> {
                         ),
                         child: Column(
                           children: [
-                            // Kartu peta
+                            // Kartu Peta
                             Expanded(
                               child: Container(
                                 decoration: BoxDecoration(
@@ -218,43 +216,47 @@ class _AttendanceLocationViewState extends State<AttendanceLocationView> {
                                 ),
                               ),
                             ),
-                            // Tampilkan alamat lokasi di bawah peta
-                            if (locationAddress.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 12.0),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.location_on_outlined,
-                                      size: 16,
-                                      color: Colors.grey[600],
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        locationAddress,
-                                        style: TextStyle(
-                                          color: Colors.grey[700],
-                                          fontSize: 13,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+
+                            // Label Alamat Lokasi + Ruang Aman agar tidak tertutup tombol
+                            if (locationAddress.isNotEmpty) ...[
+                              const SizedBox(height: 12),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    Icons.location_on_outlined,
+                                    size: 18,
+                                    color: Colors.grey[700],
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      locationAddress,
+                                      style: TextStyle(
+                                        color: Colors.grey[700],
+                                        fontSize: 14,
                                       ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow
+                                          .ellipsis, // Jika alamat terlalu panjang
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            const SizedBox(height: 20),
+                            ],
+
+                            // Spacer & SizedBox memastikan alamat terdorong ke atas,
+                            // dan memberikan jarak yang cukup agar tidak tertutup tombol di bawah.
+                            const Spacer(),
+                            const SizedBox(height: 80),
                           ],
                         ),
                       ),
                     ),
-                    // Spacer agar footer tidak tertutup
-                    const SizedBox(height: 80),
                   ],
                 ),
 
-                // Footer: Hanya satu tombol
+                // 3. FOOTER TOMBOL (Hanya 1 Tombol Dinamis di Paling Bawah)
                 Positioned(
                   bottom: 0,
                   left: 0,
@@ -276,18 +278,19 @@ class _AttendanceLocationViewState extends State<AttendanceLocationView> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => AttendanceSelfieView(
-                                        isCheckIn:
-                                            !isCheckedIn, // Kirim status yang diinginkan
-                                        latitude: position.latitude,
-                                        longitude: position.longitude,
-                                        locationAddress: locationAddress.isEmpty
-                                            ? 'Lokasi tidak terdeteksi'
-                                            : locationAddress,
-                                        userData: widget.userData,
-                                        companyName: widget.companyName,
-                                        photoUrl: widget.photoUrl,
-                                      ),
+                                      builder: (context) =>
+                                          AttendanceSelfieView(
+                                            isCheckIn: !isCheckedIn,
+                                            latitude: position.latitude,
+                                            longitude: position.longitude,
+                                            locationAddress:
+                                                locationAddress.isEmpty
+                                                ? 'Lokasi tidak terdeteksi'
+                                                : locationAddress,
+                                            userData: widget.userData,
+                                            companyName: widget.companyName,
+                                            photoUrl: widget.photoUrl,
+                                          ),
                                     ),
                                   );
                                 },
