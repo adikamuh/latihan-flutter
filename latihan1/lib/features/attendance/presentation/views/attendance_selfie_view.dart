@@ -1,6 +1,8 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:latihan1/features/auth/presentation/providers/attendance_provider.dart';
+import 'package:latihan1/features/auth/domain/entities/login_entity.dart';
+import 'package:latihan1/features/attendance/presentation/providers/attendance_selfie_provider.dart';
+import 'package:latihan1/features/attendance/presentation/views/attendance_confirm_view.dart';
 import 'package:provider/provider.dart';
 
 class AttendanceSelfieView extends StatefulWidget {
@@ -8,6 +10,9 @@ class AttendanceSelfieView extends StatefulWidget {
   final double latitude;
   final double longitude;
   final String locationAddress;
+  final LoginEntity userData;
+  final String companyName;
+  final String photoUrl;
 
   const AttendanceSelfieView({
     super.key,
@@ -15,6 +20,9 @@ class AttendanceSelfieView extends StatefulWidget {
     required this.latitude,
     required this.longitude,
     required this.locationAddress,
+    required this.userData,
+    required this.companyName,
+    required this.photoUrl,
   });
 
   @override
@@ -29,18 +37,24 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
 
   Future<void> _handleCapture(
     BuildContext context,
-    AttendanceProvider provider,
+    AttendanceSelfieProvider provider,
   ) async {
     try {
-      await provider.captureAndSubmitAttendance(
-        isCheckIn: widget.isCheckIn,
-        latitude: widget.latitude,
-        longitude: widget.longitude,
-      );
+      await provider.takePictureOnly();
 
       if (mounted) {
-        // ignore: use_build_context_synchronously
-        Navigator.of(context).popUntil((route) => route.isFirst);
+        Navigator.push(
+          // ignore: use_build_context_synchronously
+          context,
+          MaterialPageRoute(
+            builder: (context) => AttendanceConfirmationView(
+              userData: widget.userData,
+              companyName: widget.companyName,
+              photoUrl: widget.photoUrl,
+              isCheckIn: widget.isCheckIn,
+            ),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -54,10 +68,11 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AttendanceProvider(),
-      child: Consumer<AttendanceProvider>(
+    return ChangeNotifierProvider<AttendanceSelfieProvider>(
+      create: (_) => AttendanceSelfieProvider(),
+      child: Consumer<AttendanceSelfieProvider>(
         builder: (context, provider, child) {
+          // Inisialisasi kamera jika belum siap
           if (!provider.isCameraReady && provider.errorMessage.isEmpty) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (context.mounted) {
@@ -65,6 +80,10 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
               }
             });
           }
+
+          final bool isCameraFullyReady =
+              provider.cameraController != null &&
+              provider.cameraController!.value.isInitialized;
 
           return Scaffold(
             backgroundColor: const Color(0xFF113355),
@@ -87,21 +106,52 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
             body: Stack(
               fit: StackFit.expand,
               children: [
-                // 1. Kamera Preview: Mengisi Seluruh Layar dengan FittedBox
-                Positioned.fill(
-                  child: Container(
-                    color: Colors.black.withValues(alpha: 0.15),
-                    child: FittedBox(
-                      fit: BoxFit
-                          .cover, // Memastikan kamera memenuhi layar tanpa distorsi
-                      child: SizedBox(
-                        width:
-                            provider.cameraController!.value.previewSize!.width,
-                        height: provider
-                            .cameraController!
-                            .value
-                            .previewSize!
-                            .height,
+                // --- KAMERA PREVIEW (AMAN DARI NULL) ---
+                if (provider.errorMessage.isNotEmpty)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.error_outline,
+                            color: Colors.white,
+                            size: 64,
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            provider.errorMessage,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          ElevatedButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.black,
+                            ),
+                            child: const Text("Kembali"),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                else if (!provider.isCameraReady || !isCameraFullyReady)
+                  const Center(
+                    child: CircularProgressIndicator(color: Colors.white),
+                  )
+                else
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black.withValues(alpha: 0.15),
+                      child: AspectRatio(
+                        aspectRatio:
+                            provider.cameraController!.value.aspectRatio,
                         child: CameraPreview(
                           provider.cameraController!,
                           key: UniqueKey(),
@@ -109,22 +159,22 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
                       ),
                     ),
                   ),
-                ),
 
-                // 2. Oval Overlay di Tengah Layar (Mengikuti Ukuran Layar, bukan kamera)
+                // --- OVAL OVERLAY ---
                 Center(
                   child: CustomPaint(
-                    painter: OvalPainter(),
+                    painter: OvalPainter(
+                      isFaceDetected:
+                          provider.faceDetected, // Kirim status deteksi
+                    ),
                     size: Size(
-                      MediaQuery.of(context).size.width *
-                          0.8, // 80% lebar layar
-                      MediaQuery.of(context).size.height *
-                          0.4, // 40% tinggi layar
+                      MediaQuery.of(context).size.width * 0.8,
+                      MediaQuery.of(context).size.height * 0.4,
                     ),
                   ),
                 ),
 
-                // 3. Teks Panduan
+                // --- TEKS PANDUAN ---
                 Positioned(
                   top: MediaQuery.of(context).size.height * 0.45,
                   left: 0,
@@ -137,7 +187,7 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
                   ),
                 ),
 
-                // 4. FOOTER (ALAMAT & TOMBOL)
+                // --- FOOTER (ALAMAT & TOMBOL) ---
                 Positioned(
                   bottom: 0,
                   left: 0,
@@ -189,14 +239,32 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
                           const SizedBox(height: 20),
                           Center(
                             child: GestureDetector(
-                              onTap: provider.isLoading
-                                  ? null
-                                  : () => _handleCapture(context, provider),
+                              onTap: () {
+                                if (provider.isLoading) return;
+                                if (!provider.faceDetected) {
+                                  // Tampilkan peringatan, tapi tetap izinkan pengambilan foto
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        '⚠️ Wajah tidak terdeteksi. Pastikan wajah berada di dalam lingkaran.',
+                                      ),
+                                      backgroundColor: Colors.orange,
+                                    ),
+                                  );
+                                  // Tetap lanjutkan pengambilan foto (opsional, jika ingin tetap memaksa)
+                                  // _handleCapture(context, provider);
+                                } else {
+                                  _handleCapture(context, provider);
+                                }
+                              },
                               child: Container(
                                 width: 70,
                                 height: 70,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFFA1D645),
+                                decoration: BoxDecoration(
+                                  color: provider.faceDetected
+                                      ? const Color(0xFFA1D645)
+                                      : Colors
+                                            .grey, // Hijau jika wajah terdeteksi
                                   shape: BoxShape.circle,
                                 ),
                                 child: Center(
@@ -233,36 +301,47 @@ class _AttendanceSelfieViewState extends State<AttendanceSelfieView> {
   }
 }
 
-// Oval Painter (tanpa deteksi wajah real-time)
+// OvalPainter (tidak berubah)
 class OvalPainter extends CustomPainter {
+  final bool isFaceDetected;
+  OvalPainter({this.isFaceDetected = false});
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white
+      ..color = isFaceDetected
+          ? Colors.green
+          : Colors
+                .white // Hijau jika terdeteksi
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
+      ..strokeWidth = isFaceDetected ? 4.0 : 2.0;
 
-    // Menggambar oval menggunakan ukuran size yang dikirim dari CustomPaint
     final rect = Rect.fromLTRB(0, 0, size.width, size.height);
     final path = Path();
     path.addOval(rect);
 
-    final dashWidth = 8.0;
-    final dashSpace = 6.0;
-    final distance = path.computeMetrics().first.length;
-
-    double currentDistance = 0;
-    while (currentDistance < distance) {
-      final start = currentDistance;
-      final end = currentDistance + dashWidth;
-      final pathSegment = path.extractPath(start, end);
-      canvas.drawPath(pathSegment, paint);
-      currentDistance += dashWidth + dashSpace;
+    if (isFaceDetected) {
+      // Garis penuh jika wajah terdeteksi
+      canvas.drawPath(path, paint);
+    } else {
+      // Garis putus-putus jika belum
+      final dashWidth = 8.0;
+      final dashSpace = 6.0;
+      final distance = path.computeMetrics().first.length;
+      double currentDistance = 0;
+      while (currentDistance < distance) {
+        final start = currentDistance;
+        final end = currentDistance + dashWidth;
+        final pathSegment = path.extractPath(start, end);
+        canvas.drawPath(pathSegment, paint);
+        currentDistance += dashWidth + dashSpace;
+      }
     }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant OvalPainter oldDelegate) =>
+      oldDelegate.isFaceDetected != isFaceDetected;
 }
 
 extension on Path {

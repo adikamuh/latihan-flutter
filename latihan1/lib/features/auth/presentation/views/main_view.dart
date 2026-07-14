@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:latihan1/core/di/service_locator.dart';
 import 'package:latihan1/features/auth/presentation/providers/auth_provider.dart';
-import 'package:latihan1/features/auth/presentation/views/attendance_location_view.dart';
+import 'package:latihan1/features/attendance/presentation/views/attendance_location_view.dart';
 import 'package:provider/provider.dart';
 
 class MainView extends StatefulWidget {
@@ -48,7 +48,7 @@ class _MainViewState extends State<MainView> {
       builder: (context, authProvider, child) {
         final userData = authProvider.loginData;
         final String employeeName =
-            userData?.ename ?? userData?.uname ?? 'Guest User';
+            userData?.getName() ?? 'Guest User';
         final String companyName = userData?.getCompany() ?? '-';
         final String? photoUrl = userData?.photos;
         final String todayDate = DateFormat(

@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
 
-// ignore: implementation_imports
 import 'package:flutter/material.dart';
 import 'package:latihan1/core/constants/app_const.dart';
 import 'package:latihan1/core/services/app_log.dart';
@@ -121,18 +119,6 @@ class AuthProvider extends ChangeNotifier {
     } on Exception catch (e, s) {
       AppLog.instance.logError('Logout failed', e, s);
     } finally {
-      setLoading(false);
-    }
-  }
-
-  Future<void> attendance({
-    required bool isCheckIn,
-    required double latitude,
-    required double longitude,
-    required File imageFile, // Tipe File
-  }) async {
-    setLoading(true);
-    try {} finally {
       setLoading(false);
     }
   }
